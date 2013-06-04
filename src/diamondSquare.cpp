@@ -1,11 +1,12 @@
-#include <src/diamondSquare.h>
+#include "diamondSquare.h"
 
-DiamondSquare::DiamondSquare(const int power2, long idum):
+DiamondSquare::DiamondSquare(const int power2, long idum, const bool &uniform):
     n(power2),
     L0(pow(2,n)),
     L(L0),
     idum(idum),
-    R(zeros<mat>(L0+1,L0+1))
+    R(zeros<mat>(L0+1,L0+1)),
+    uniform(uniform)
 {
 }
 
@@ -22,10 +23,17 @@ mat DiamondSquare::generate(const double H, const double corners)
 //    R(L0,L0) = ran2(&idum);
 
     if (corners == 42) {
-        R(0,0) = ran2(&idum);
-        R(0,L0) = ran2(&idum);
-        R(L0,0) = ran2(&idum);
-        R(L0,L0) = ran2(&idum);
+        if (uniform) {
+            R(0,0) = ran2(&idum) - 0.5;
+            R(0,L0) = ran2(&idum) - 0.5;
+            R(L0,0) = ran2(&idum) - 0.5;
+            R(L0,L0) = ran2(&idum) - 0.5;
+        } else {
+            R(0,0) = gaussianDeviate(&idum);
+            R(0,L0) = gaussianDeviate(&idum);
+            R(L0,0) = gaussianDeviate(&idum);
+            R(L0,L0) = gaussianDeviate(&idum);
+        }
     }
     else {
         R(0,0) = corners;
@@ -107,7 +115,11 @@ void DiamondSquare::square(mat &R, const uvec &pos, const int &L0, const int &L,
     for (int i = 0; i < 4; i++) {
         center += R(xpos(i), ypos(i));
     }
-    R(pos(0) + L/2, pos(1) + L/2) += center*0.25 + (ran2(&idum) - 0.5)*randrange;
+    if (uniform)
+        R(pos(0) + L/2, pos(1) + L/2) += center*0.25 + (ran2(&idum) - 0.5)*randrange;
+    else
+        R(pos(0) + L/2, pos(1) + L/2) += center*0.25 + gaussianDeviate(&idum)*randrange;
+
 //    R(pos(0) + L/2, pos(1) + L/2) += center*0.25;
 }
 
@@ -144,7 +156,11 @@ void DiamondSquare::diamond(mat &R, const uvec pos, const int L0, const int L, c
     for (int i = 0; i < 4; i++) {
         center += R(xpos(i), ypos(i));
     }
-    R(pos(0) + L/2, pos(1)) += center/len + (ran2(&idum) - 0.5)*randrange;
+    if (uniform)
+        R(pos(0) + L/2, pos(1)) += center/len + (ran2(&idum) - 0.5)*randrange;
+    else
+        R(pos(0) + L/2, pos(1)) += center/len + gaussianDeviate(&idum)*randrange;
+
 //    R(pos(0) + L/2, pos(1)) += center/len;
 
 
@@ -175,7 +191,11 @@ void DiamondSquare::diamond(mat &R, const uvec pos, const int L0, const int L, c
     for (int i = 0; i < 4; i++) {
         center += R(xpos(i), ypos(i));
     }
-    R(pos(0), pos(1) + L/2) += center/len + (ran2(&idum) - 0.5)*randrange;
+    if (uniform)
+        R(pos(0), pos(1) + L/2) += center/len + (ran2(&idum) - 0.5)*randrange;
+    else
+        R(pos(0), pos(1) + L/2) += center/len + gaussianDeviate(&idum)*randrange;
+
 //    R(pos(0), pos(1) + L/2) += center/len;
 }
 
@@ -202,7 +222,11 @@ void DiamondSquare::bottom(mat &R, const uvec pos, const int L0, const int L, co
     for (int i = 0; i < 3; i++) {
         center += R(xpos(i), ypos(i));
     }
-    R(pos(0) + L, pos(1) + L/2) += center/3.0 + (ran2(&idum) - 0.5)*randrange;
+    if (uniform)
+        R(pos(0) + L, pos(1) + L/2) += center/3.0 + (ran2(&idum) - 0.5)*randrange;
+    else
+        R(pos(0) + L, pos(1) + L/2) += center/3.0 + gaussianDeviate(&idum)*randrange;
+
 //    R(pos(0) + L, pos(1) + L/2) += center/3.0;
 }
 
@@ -229,7 +253,23 @@ void DiamondSquare::right(mat &R, const uvec pos, const int L0, const int L, con
     for (int i = 0; i < 3; i++) {
         center += R(xpos(i), ypos(i));
     }
-    R(pos(0) + L/2, pos(1) + L) += center/3.0 + (ran2(&idum) - 0.5)*randrange;
+    if (uniform)
+        R(pos(0) + L/2, pos(1) + L) += center/3.0 + (ran2(&idum) - 0.5)*randrange;
+    else
+        R(pos(0) + L/2, pos(1) + L) += center/3.0 + gaussianDeviate(&idum)*randrange;
+
 //    R(pos(0) + L/2, pos(1) + L) += center/3.0;
+}
+
+double DiamondSquare::gaussianDeviate(long *seed)
+{
+    double R, randomNormal;
+    // Box-Muller transform
+    R = sqrt(-2.0*log(ran2(seed)));
+    randomNormal = R*cos(2.0*pi*ran2(seed));
+
+    cout << "*seed = " << *seed << endl;
+
+    return randomNormal;
 }
 

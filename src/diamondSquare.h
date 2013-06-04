@@ -3,14 +3,14 @@
 
 #include <iostream>
 #include <armadillo>
-#include <src/lib.h>
+#include "lib.h"
 
 using namespace std;
 using namespace arma;
 
 class DiamondSquare {
 public:
-    DiamondSquare(const int power2, long idum);
+    DiamondSquare(const int power2, long idum, const bool &uniform = true);
     mat generate(const double H, const double corners = 42);
 private:
     void square(mat &R, const uvec &pos, const int &L0, const int &L, const double &randrange);
@@ -19,12 +19,12 @@ private:
     void bottom(mat &R, const uvec pos, const int L0, const int L, const double randrange);
     void right(mat &R, const uvec pos, const int L0, const int L, const double randrange);
 
-//    int periodic(int idx, const int l);
-//    umat periodic(umat idx, const int l);
+    double gaussianDeviate(long *seed);
 
     int n, L0, L;
     long idum;
     mat R;
+    const bool uniform;
 };
 
 #endif // DIAMONDSQUARE_H

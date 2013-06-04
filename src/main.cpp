@@ -1,6 +1,6 @@
 #include <iostream>
 #include <armadillo>
-#include <src/diamondSquare.h>
+#include "diamondSquare.h"
 
 using namespace std;
 using namespace arma;
@@ -12,12 +12,12 @@ int main()
     double H;
 
     idum = -1;
-    power2 = 3;
+    power2 = 2;
     H = 0.8;
 
     int L0 = pow(2,power2);
     mat R = zeros(L0+1, L0+1);
-    DiamondSquare m(power2, idum);
+    DiamondSquare m(power2, idum, false);
     R = m.generate(H);
 
     cout << "R = " << endl << R << endl;
