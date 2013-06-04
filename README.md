@@ -7,7 +7,7 @@ Source files best viewed using Qt Creator.
 
 Usage
 -----
-Compile for use with octave with `octave octave-compile/compile.m`. Then run in Octave using 
+Compile for use with octave with `octave octave-compile/compile.m` or with the bash script `compile.sh` (still needs octave installed). Then run in Octave using 
 
     main_matlab(seed, power2, H, corners, uniform)
 
