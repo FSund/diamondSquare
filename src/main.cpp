@@ -17,8 +17,8 @@ int main()
 
     int L0 = pow(2,power2);
     mat R = zeros(L0+1, L0+1);
-    DiamondSquare m(power2, idum, false);
-    R = m.generate(H);
+    DiamondSquare m(power2, idum, 2);
+    R = m.generate(H, 0.5);
 
     cout << "R = " << endl << R << endl;
 
