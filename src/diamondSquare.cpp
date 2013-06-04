@@ -1,4 +1,4 @@
-#include "diamondSquare.h"
+#include <src/diamondSquare.h>
 
 DiamondSquare::DiamondSquare(const int power2, long idum):
     n(power2),

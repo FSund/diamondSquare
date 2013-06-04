@@ -6,10 +6,10 @@ CONFIG -= qt
 include(defaults.pri)
 
 HEADERS += \
-    diamondSquare.h \
-    lib.h
+    src/diamondSquare.h \
+    src/lib.h
 
 SOURCES += \
-    main.cpp \
-    diamondSquare.cpp \
-    lib.cpp
+    src/main.cpp \
+    src/diamondSquare.cpp \
+    src/lib.cpp

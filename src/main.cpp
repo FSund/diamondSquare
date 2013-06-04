@@ -1,6 +1,6 @@
 #include <iostream>
 #include <armadillo>
-#include "diamondSquare.h"
+#include <src/diamondSquare.h>
 
 using namespace std;
 using namespace arma;

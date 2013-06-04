@@ -1,3 +1,8 @@
+# Directories
+ROOT_DIR = $$PWD
+SRC_DIR = $$PWD/src
+INCLUDEPATH += $$ROOT_DIR
+
 LIBS += -larmadillo
 
 # MPI Settings

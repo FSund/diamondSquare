@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <armadillo>
-#include "lib.h"
+#include <src/lib.h>
 
 using namespace std;
 using namespace arma;
