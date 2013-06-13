@@ -14,7 +14,9 @@ public:
     mat generate(const double H, const double corners = 42);
 private:
     void square(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
-    void diamond(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
+    void diamond(const uint &x, const uint &y, const uint &stepSize, const uint &halfStep, const double &randrange, mat &R);
+    void smartDiamond(const uint &x, const uint &y, const uint &stepLength, const uint &halfStep, const uint &sustemLength, const double &randrange, mat &R);
+    void smarterDiamond(const uint &x, const uint &y, const uint &stepLength, const uint &halfStep, const uint &sustemLength, const double &randrange, mat &R);
 
     void bottom(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
     void right(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
@@ -22,7 +24,7 @@ private:
     double random(long *seed);
     double gaussianDeviate(long *seed);
 
-    uint n, power2, L0, L;
+    uint n, power2, systemLength;
     long idum;
     mat R;
     const int RNG;
@@ -31,6 +33,7 @@ private:
     uint xpos[4];
     uint ypos[4];
     double sum;
+    uint nPoints;
 };
 
 inline double DiamondSquare::random(long *seed)

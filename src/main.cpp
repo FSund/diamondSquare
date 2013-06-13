@@ -12,7 +12,7 @@ int main()
     double H;
 
     idum = -1;
-    power2 = 2;
+    power2 = 3;
     H = 0.8;
 
     int L0 = pow(2,power2);
