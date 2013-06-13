@@ -10,22 +10,32 @@ using namespace arma;
 
 class DiamondSquare {
 public:
-    DiamondSquare(const int power2, long idum, const int &RNG = true);
+    DiamondSquare(const int power2, long idum, const int RNG = 1, const bool PBC = false);
     mat generate(const double H, const double corners = 42);
+    mat generateNew(const double H, const double corners = 42);
 private:
     void square(mat &R, const uvec &pos, const int &L0, const int &L, const double &randrange);
+    void square(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
     void diamond(mat &R, const uvec pos, const int L0, const int L, const double randrange);
+    void diamond(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
 
     void bottom(mat &R, const uvec pos, const int L0, const int L, const double randrange);
+    void bottom(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
     void right(mat &R, const uvec pos, const int L0, const int L, const double randrange);
+    void right(const uint &x, const uint &y, const uint &L, const uint &Lhalf, const double &randrange, mat &R);
 
     double random(long *seed);
     double gaussianDeviate(long *seed);
 
-    int n, L0, L;
+    uint n, power2, L0, L;
     long idum;
     mat R;
     const int RNG;
+    const bool PBC;
+
+    uint xpos[4];
+    uint ypos[4];
+    double sum;
 };
 
 inline double DiamondSquare::random(long *seed)
