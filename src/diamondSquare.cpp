@@ -1,323 +1,205 @@
 #include "diamondSquare.h"
 
-DiamondSquare::DiamondSquare(const int power2, long idum, const int RNG, const bool PBC):
-    n(power2),
-    power2(power2),
-    systemLength(pow(2,power2)),
-    idum(idum),
-    R(zeros<mat>(systemLength+1,systemLength+1)),
-    RNG(RNG),
-    PBC(PBC)
-{
-    if (RNG > 2) {
-        cout << "RNG too large, have only implemented 3 random number generators" << endl;
-        exit(1);
-    }
-}
+mat &DiamondSquare::generate(
+        const uint power2,
+        const double H,
+        const double minZValue,
+        const double maxZValue,
+        const bool PBC,
+        const long idum,
+        const uint RNG) {
+    this->power2 = power2;
+    this->PBC = PBC;
+    this->RNG = RNG;
+    systemSize = pow(2.0, power2) + 1;
 
-mat DiamondSquare::generate(const double H, const double corners)
-{
-    if (corners == 42) {
-        R(0,0)                       = ran2(&idum) - 0.5;
-        R(0,systemLength)            = ran2(&idum) - 0.5;
-        R(systemLength,0)            = ran2(&idum) - 0.5;
-        R(systemLength,systemLength) = ran2(&idum) - 0.5;
-    }
-    else {
-        R(0,0)                       = corners;
-        R(0,systemLength)            = R(0,0);
-        R(systemLength,0)            = R(0,0);
-        R(systemLength,systemLength) = R(0,0);
+    srand(idum); // setting the seed of the RNG for both C++'s rand()/srand() and Armadillo's randu()/randn()
+
+    R = zeros<mat>(systemSize, systemSize);
+    if (PBC) { // We need the same value in the corners if we are using periodic boundaries
+        R(0,0)                       = randu<double>() - 0.5;
+        R(0,systemSize-1)            = R(0,0);
+        R(systemSize-1,0)            = R(0,0);
+        R(systemSize-1,systemSize-1) = R(0,0);
+    } else {
+        R(0,0)                       = randu<double>() - 0.5;
+        R(0,systemSize-1)            = randu<double>() - 0.5;
+        R(systemSize-1,0)            = randu<double>() - 0.5;
+        R(systemSize-1,systemSize-1) = randu<double>() - 0.5;
     }
 
-    double randrange = 1.0;
-    double randfac = pow(2.0, -H);
-    uint l;
+    runDiamondSquare(R, H);
 
-    uint x[systemLength*systemLength/4];
-    uint y[systemLength*systemLength/4];
-    uint nSteps;
-    uint stepLength = systemLength;
-    uint halfStep = stepLength/2;
+    if (RNG == 0 && PBC == 0) {
+        return R;
+    }
 
-    cout << "systemLength = " << systemLength << endl;
-
-    for (uint i = 0; i < power2; i++) {
-        nSteps = systemLength/stepLength;
-
-        l = 0;
-        for (uint j = 0; j < nSteps; ++j) {
-            for (uint k = 0; k < nSteps; ++k) {
-                x[l] = j*stepLength;
-                y[l] = k*stepLength;
-                ++l;
-            }
+    // normalize to range [minZ maxZ]
+    double minValue = min(min(R));
+    double normFactor = 1.0/(max(max(R)) - minValue);
+    for (uint i = 0; i < systemSize; i++) {
+        for (uint j = 0; j < systemSize; j++) {
+            R(i,j) = (R(i,j) - minValue)*normFactor*(maxZValue - minZValue) + minZValue;
         }
-
-        /* squares */
-        for (uint j = 0; j < nSteps*nSteps; j++) {
-            square(x[j], y[j], stepLength, halfStep, randrange, R);
-        }
-
-//        cout << endl << "R after squares" << endl << R << endl;
-
-        /* diamonds */
-        if (PBC) {
-            for (uint j = 0; j < nSteps*nSteps; j++) {
-                smartDiamond(x[j], y[j], stepLength, halfStep, systemLength, randrange, R);
-            }
-        } else {
-            for (uint j = 0; j < nSteps*nSteps; j++) {
-                diamond(x[j], y[j], stepLength, halfStep, randrange, R);
-            }
-        }
-
-//        cout << endl << "R after diamonds" << endl << R << endl;
-
-        if (PBC) {
-            uint idx;
-            for (uint j = 0; j < nSteps; j++) {
-                idx = halfStep + j*stepLength;
-                R(idx, systemLength) = R(idx,0);
-                R(systemLength, idx) = R(0,idx);
-            }
-//            cout << "R after PBC" << endl << R << endl;
-        } else {
-            /* bottom diamonds */
-            for (uint j = 0; j < nSteps; j++) {
-                x[j] = systemLength - stepLength;
-                y[j] = j*stepLength;
-            }
-            for (uint j = 0; j < nSteps; j++)
-                bottom(x[j], y[j], stepLength, halfStep, randrange, R);
-
-//            cout << endl << "R after bottom" << endl << R << endl;
-
-            /* right diamonds */
-            for (uint j = 0; j < nSteps; j++) {
-                x[j] = j*stepLength;
-                y[j] = systemLength - stepLength;
-            }
-            for (uint j = 0; j < nSteps; j++)
-                right(x[j], y[j], stepLength, halfStep, randrange, R);
-
-//            cout << endl << "R after right" << endl << R << endl;
-        }
-
-        stepLength /= 2;
-        halfStep /= 2;
-        randrange *= randfac;
     }
 
     return R;
 }
 
-void DiamondSquare::square(
-        const uint &x,
-        const uint &y,
-        const uint &L,
-        const uint &Lhalf,
-        const double &randrange,
-        mat &R)
-{
-    for (uint i = 0; i < 4; i++) {
-        xpos[i] = x;
-        ypos[i] = y;
-    }
-    xpos[2] += L;
-    xpos[3] += L;
-//    ypos(0) += 0.0;
-    ypos[1] += L;
-//    ypos(2) += 0.0;
-    ypos[3] += L;
+void DiamondSquare::runDiamondSquare(mat& R, const double H) {
 
-    sum = 0.0;
-    for (int i = 0; i < 4; i++) {
-        sum += R(xpos[i], ypos[i]);
+    double RNGstddv;
+
+    uint stepLength = systemSize-1;
+    uint halfStepLength = stepLength/2;
+
+    for (uint iteration = 0; iteration < 2*power2; iteration+=2) { // Doing two iterations inside the loop
+        uint nSteps = (systemSize-1)/stepLength;
+
+        // Squares
+        RNGstddv = sqrt(1.0/pow(2.0, 2.0*H*iteration));
+        for (uint x = 0; x < nSteps*stepLength; x += stepLength) {
+            for (uint y = 0; y < nSteps*stepLength; y += stepLength) {
+                square(x, y, stepLength, halfStepLength, RNGstddv, R);
+            }
+        }
+//        cout << "R after squares" << endl << R << endl;
+
+        // Diamonds
+        RNGstddv = sqrt(1.0/pow(2.0, 2.0*H*(iteration+1)));
+        for (uint x = 0; x < nSteps*stepLength; x += stepLength) {
+            for (uint y = 0; y < nSteps*stepLength; y += stepLength) {
+                diamond(x, y, stepLength, halfStepLength, RNGstddv, R);
+            }
+        }
+//        cout << "R after diamonds" << endl << R << endl;
+
+        if (PBC) {
+            for (uint i = 0; i < nSteps; i++) {
+                uint idx = halfStepLength + i*stepLength;
+                R(idx, systemSize-1) = R(idx,0);
+                R(systemSize-1, idx) = R(0,idx);
+            }
+//            cout << "R after PBC" << endl << R << endl;
+        } else {
+            // We have to do the bottom and right edge diamonds manually
+
+            // Bottom edge diamonds
+            for (uint y = halfStepLength; y < nSteps*stepLength; y += stepLength) {
+                uint x = (nSteps-1)*stepLength + halfStepLength;
+                bottomEdgeDiamonds(x, y, halfStepLength, RNGstddv, R);
+            }
+//            cout << "R after bottom diamonds" << endl << R << endl;
+
+            // Right edge diamonds
+            for (uint x = halfStepLength; x < nSteps*stepLength; x+= stepLength) {
+                uint y = (nSteps-1)*stepLength + halfStepLength;
+                rightEdgeDiamonds(x, y, halfStepLength, RNGstddv, R);
+            }
+//            cout << "R after right diamonds" << endl << R << endl;
+        }
+
+        stepLength /= 2;
+        halfStepLength /= 2;
     }
-    R(x + Lhalf, y + Lhalf) += sum*0.25 + random(&idum)*randrange; // change to = instead of +=
+}
+
+void DiamondSquare::square(
+        const uint x,
+        const uint y,
+        const uint stepLength,
+        const uint halfStepLength,
+        const double RNGstddv,
+        mat &R) {
+
+    double average = 0.25*(R(x, y) + R(x+stepLength, y) + R(x, y+stepLength) + R(x+stepLength, y+stepLength));
+    R(x + halfStepLength, y + halfStepLength) = average + random()*RNGstddv; // change to = instead of +=
 }
 
 void DiamondSquare::diamond(
-        const uint &x,
-        const uint &y,
-        const uint &stepSize,
-        const uint &halfStep,
-        const double &randrange,
-        mat &R)
-{
-    /* left */
-    xpos[0] = x;
-    xpos[1] = x + stepSize;
-    xpos[2] = x + halfStep;
+        const uint x,
+        const uint y,
+        const uint stepLength,
+        const uint halfStepLength,
+        const double RNGstddv,
+        mat &R) {
 
-    ypos[0] = y;
-    ypos[1] = y;
-    ypos[2] = y + halfStep;
+    double average;
 
-    if (y == 0) { // at left edge
-        nPoints = 3;
-    } else {
-        xpos[3] = x + halfStep;
-        ypos[3] = y - halfStep;
-        nPoints = 4;
-    }
-
-    sum = 0.0;
-    for (uint i = 0; i < nPoints; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x + halfStep, y) += sum/nPoints + random(&idum)*randrange;
-
-
-    /* top */
-    ypos[0] = y;
-    ypos[1] = halfStep;
-    ypos[2] = stepSize;
-
-    xpos[0] = x;
-    xpos[1] = halfStep;
-    xpos[2] = x;
-
-    if (x == 0) {
-        nPoints = 3;
-    } else {
-        xpos[3] = x - halfStep;
-        ypos[3] = halfStep;
-        nPoints = 4;
-    }
-
-    sum = 0.0;
-    for (uint i = 0; i < nPoints; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x, y + halfStep) += sum/nPoints + random(&idum)*randrange;
-}
-void DiamondSquare::smartDiamond(
-        const uint &x,
-        const uint &y,
-        const uint &stepSize,
-        const uint &halfStep,
-        const uint &systemLength,
-        const double &randrange,
-        mat &R)
-{
-    /* left */
-    xpos[0] = x;
-    xpos[1] = x + stepSize;
-    xpos[2] = x + halfStep;
-
-    ypos[0] = y;
-    ypos[1] = y;
-    ypos[2] = y + halfStep;
-
-    if (y == 0) { // at left edge
+    // Point centered at left edge of square
+    if (y == 0) { // At left edge of system
         if (PBC) {
-            xpos[3] = x + halfStep;
-            ypos[3] = systemLength - halfStep;
-            nPoints = 4;
+            average = 0.25*(
+                R(x, y) +
+                R(x+stepLength, y) +
+                R(x+halfStepLength, y+halfStepLength) +
+                R(x+halfStepLength, systemSize - 1 - halfStepLength));
+        } else {
+            average = 0.33333333333333333333333*(
+                R(x, y) +
+                R(x+stepLength, y) +
+                R(x+halfStepLength, y+halfStepLength));
         }
-        else {
-            nPoints = 3;
-        }
-    } else {
-        xpos[3] = x + halfStep;
-        ypos[3] = y - halfStep;
-        nPoints = 4;
+    } else { // Inside the system -- nothing to worry about
+        average = 0.25*(
+            R(x, y) +
+            R(x+stepLength, y) +
+            R(x+halfStepLength, y+halfStepLength) +
+            R(x+halfStepLength, y-halfStepLength));
     }
+    R(x + halfStepLength, y) = average + random()*RNGstddv;
 
-    sum = 0.0;
-    for (uint i = 0; i < nPoints; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x + halfStep, y) += sum/nPoints + random(&idum)*randrange;
-
-
-    /* top */
-    ypos[0] = y;
-    ypos[1] = halfStep;
-    ypos[2] = stepSize;
-
-    xpos[0] = x;
-    xpos[1] = halfStep;
-    xpos[2] = x;
-
-    if (x == 0) {
+    // Point centered at top edge of square
+    if (x == 0) { // At top edge of system
         if (PBC) {
-            xpos[3] = systemLength - halfStep;
-            ypos[3] = halfStep;
-            nPoints = 4;
+            average = 0.25*(
+                R(x, y) +
+                R(x, y+stepLength) +
+                R(x+halfStepLength, y+halfStepLength) +
+                R(systemSize - 1 - halfStepLength, y+halfStepLength));
+        } else {
+            average = 0.33333333333333333333333*(
+                R(x, y) +
+                R(x, y+stepLength) +
+                R(x+halfStepLength, y+halfStepLength));
         }
-        else {
-            nPoints = 3;
-        }
+    } else { // Inside the system -- nothing to worry about
+        average = 0.25*(
+            R(x, y) +
+            R(x, y+stepLength) +
+            R(x+halfStepLength, y+halfStepLength) +
+            R(x-halfStepLength, y+halfStepLength));
+    }
+    R(x, y + halfStepLength) = average + random()*RNGstddv;
+}
+
+void DiamondSquare::bottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat& R) {
+
+    double average = 0.33333333333333333333333*(
+        R(x, y) +
+        R(x+halfStepLength, y+halfStepLength) +
+        R(x+halfStepLength, y-halfStepLength));
+    R(x + halfStepLength, y) = average + random()*RNGstddv;
+}
+
+void DiamondSquare::rightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat& R) {
+
+    double average = 0.33333333333333333333333*(
+        R(x, y) +
+        R(x+halfStepLength, y+halfStepLength) +
+        R(x-halfStepLength, y+halfStepLength));
+    R(x, y + halfStepLength) = average + random()*RNGstddv;
+}
+
+inline double DiamondSquare::random() {
+    // Returns random number with mean 0
+    if (RNG == 0) {
+        return 0.0;
+    } else if (RNG == 1) {
+        return (randu<double>() - 0.5); // uniform distribution in [-0.5,0.5]
+    } else if (RNG == 2) {
+        return randn<double>(); // standard normal distribution (sigma = 1, my = 0)
     } else {
-        xpos[3] = x - halfStep;
-        ypos[3] = halfStep;
-        nPoints = 4;
+        return NAN;
     }
-
-    sum = 0.0;
-    for (uint i = 0; i < nPoints; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x, y + halfStep) += sum/nPoints + random(&idum)*randrange;
-}
-
-void DiamondSquare::bottom(
-        const uint &x,
-        const uint &y,
-        const uint &L,
-        const uint &Lhalf,
-        const double &randrange,
-        mat &R)
-{
-    /* bottom */
-    for (int i = 0; i < 3; i++) {
-        xpos[i] = x;
-        ypos[i] = y;
-    }
-
-    xpos[0] += L;
-    xpos[1] += Lhalf;
-    xpos[2] += L;
-
-    ypos[0] += 0;
-    ypos[1] += Lhalf;
-    ypos[2] += L;
-
-    sum = 0.0;
-    for (int i = 0; i < 3; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x + L, y + Lhalf) += sum/3.0 + random(&idum)*randrange;
-}
-
-void DiamondSquare::right(
-        const uint &x,
-        const uint &y,
-        const uint &L,
-        const uint &Lhalf,
-        const double &randrange,
-        mat &R)
-{
-    /* right */
-    for (uint i = 0; i < 3; i++) {
-        xpos[i] = x;
-        ypos[i] = y;
-    }
-
-    xpos[0] += 0; // OK WITH BOUNDARIES
-    xpos[1] += Lhalf;
-    xpos[2] += L;
-
-    ypos[0] += L;
-    ypos[1] += Lhalf;
-    ypos[2] += L;
-
-    sum = 0.0;
-    for (uint i = 0; i < 3; i++) {
-        sum += R(xpos[i], ypos[i]);
-    }
-    R(x + Lhalf, y + L) += sum/3.0 + random(&idum)*randrange;
 }
