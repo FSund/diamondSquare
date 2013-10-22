@@ -7,7 +7,7 @@ Source files best viewed using Qt Creator.
 
 Usage
 -----
-Compile for use with the script matlab-compile/compile.m`. Then run in Matlab/Octave using
+Compile for use with the Matlab/Octave-script `matlab-compile/compile.m`. Then run in Matlab/Octave using
 
     main_matlab(power2, H, zMax, zMin, PBC, idum, RNG)
 
