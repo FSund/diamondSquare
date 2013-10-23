@@ -58,14 +58,14 @@ void parseArgs(
         int &RNG) {
 
     if (nArgs < 1) {
-        mexErrMsgTxt("Arguments: power2  optional:(H[1,2]  position_of_bottom_surface  position_of_top_surface  surface_delta_z  PBC[0|1]  idum[unsigned int]  RNG[0|1|2])");
+        mexErrMsgTxt("Arguments: power2  optional:(H[1,2]  z_min  z_max  PBC[0|1]  idum[unsigned int]  RNG[0|1|2])");
         // exit(1);
     }
 
     // arguments that are needed
     power2   = int(*mxGetPr(prhs[0]));
 
-    // argument that have default values
+    // arguments that have default values
     H         = nArgs > 1 ?       *mxGetPr(prhs[1])   : 1.5;
     zMin      = nArgs > 2 ?       *mxGetPr(prhs[2])   : 0.0;
     zMax      = nArgs > 3 ?       *mxGetPr(prhs[3])   : 1.0;
