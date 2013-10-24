@@ -13,10 +13,10 @@ int main(int nArgs, const char *argv[]) {
     bool addition;
     bool PBC;
     int RNG;
-    long seed;
+    int seed;
 
     if (nArgs < 3) {
-        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  addition  PBC[0|1]  RNG[0|1|2])  seed )" << endl;
+        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  addition  PBC[0|1]  RNG[0|1|2])  seed[unsigned int] )" << endl;
         exit(1);
     }
 
@@ -25,15 +25,15 @@ int main(int nArgs, const char *argv[]) {
     H      = atof(argv[2]);
 
     // argument that have default values
-    corners(0) = nArgs > 4  ? atof(argv[3])  : 0.5;
-    corners(1) = nArgs > 5  ? atof(argv[4])  : corners(0);
-    corners(2) = nArgs > 6  ? atof(argv[5])  : corners(0);
-    corners(3) = nArgs > 7  ? atof(argv[6])  : corners(0);
-    sigma      = nArgs > 8  ? atof(argv[7])  : 1.0;
-    addition   = nArgs > 9  ? atoi(argv[8])  : false;
-    PBC        = nArgs > 10 ? atoi(argv[9])  : true;
-    RNG        = nArgs > 11 ? atoi(argv[10]) : 2;
-    seed       = nArgs > 12 ? atol(argv[11]) : 1;
+    corners(0) = nArgs > 3  ? atof(argv[3])  : 0.5;
+    corners(1) = nArgs > 4  ? atof(argv[4])  : corners(0);
+    corners(2) = nArgs > 5  ? atof(argv[5])  : corners(0);
+    corners(3) = nArgs > 6  ? atof(argv[6])  : corners(0);
+    sigma      = nArgs > 7  ? atof(argv[7])  : 1.0;
+    addition   = nArgs > 8  ? atoi(argv[8])  : false;
+    PBC        = nArgs > 9  ? atoi(argv[9])  : true;
+    RNG        = nArgs > 10 ? atoi(argv[10]) : 2;
+    seed       = nArgs > 11 ? ( atoi(argv[11]) >= 0 ? atoi(argv[11]) : 1 ) : 1;
 
     cout << "--- Diamond-square settings --------------------" << endl;
     cout << "power2 = " << power2  << endl;

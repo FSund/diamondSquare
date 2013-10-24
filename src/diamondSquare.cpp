@@ -43,11 +43,6 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
     uint stepLength = zerolength;
     uint halfStepLength = stepLength/2;
 
-    cout << "Initial R" << endl << R << endl;
-    cout << "system size = " << systemSize << endl;
-
-    umat visited = zeros<umat>(systemSize, systemSize);
-
     for (uint depth = 1; depth <= power2; depth++) {
 
         // Squares
@@ -55,10 +50,8 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
         for (uint x = halfStepLength; x <= zerolength - halfStepLength; x += stepLength) {
             for (uint y = halfStepLength; y <= zerolength - halfStepLength; y += stepLength) {
                 R(x,y) = square(x, y, halfStepLength, RNGstddv, R);
-                visited(x,y) += 10;
             }
         }
-        cout << "R after squares" << endl << R << endl;
 
         // Add random number to the corners of the squares used above
         if (addition) {
@@ -71,7 +64,6 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             for (uint x = 0; x <= limit; x+=stepLength) {
                 for (uint y = 0; y <= limit; y+=stepLength) {
                     R(x,y) = R(x,y) + random()*RNGstddv;
-                    visited(x,y) += 1;
                 }
             }
             if (PBC) {
@@ -81,54 +73,37 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             }
         }
 
-        cout << "positions visited by squares" << endl;
-        cout << visited << endl;
-        visited.zeros();
-
-
         // Diamonds
         RNGstddv = RNGstddv*pow(0.5, 0.5*H);
-        cout << "positions visited by diamonds" << endl;
         for (uint x = 0; x <= zerolength - halfStepLength; x += stepLength) {
             for (uint y = halfStepLength; y <= zerolength - halfStepLength; y += stepLength) {
                 R(x,y) = diamond(x, y, halfStepLength, RNGstddv, R);
-                visited(x,y) += 10;
             }
         }
         for (uint x = halfStepLength; x <= zerolength - halfStepLength; x += stepLength) {
             for (uint y = 0; y <= zerolength - halfStepLength; y += stepLength) {
                 R(x,y) = diamond(x, y, halfStepLength, RNGstddv, R);
-                visited(x,y) += 10;
             }
         }
-//        cout << "R after diamonds" << endl << R << endl;
 
         if (PBC) {
             for (uint idx = halfStepLength; idx < zerolength; idx+=halfStepLength) {
                 R(idx, zerolength) = R(idx,0);
                 R(zerolength, idx) = R(0,idx);
-                visited(idx,zerolength) += 10;
-                visited(zerolength,idx) += 10;
             }
-//            cout << "R after PBC" << endl << R << endl;
         } else {
             // Bottom edge diamonds
             for (uint y = halfStepLength; y <= zerolength - halfStepLength; y += stepLength) {
                 uint x = zerolength;
                 R(x,y) = bottomEdgeDiamonds(x, y, halfStepLength, RNGstddv, R);
-                visited(x,y) += 10;
             }
-//            cout << "R after bottom diamonds" << endl << R << endl;
 
             // Right edge diamonds
             for (uint x = halfStepLength; x <= zerolength - halfStepLength; x+= stepLength) {
                 uint y = zerolength;
                 R(x,y) = rightEdgeDiamonds(x, y, halfStepLength, RNGstddv, R);
-                visited(x,y) += 10;
             }
-//            cout << "R after right diamonds" << endl << R << endl;
         }
-        cout << "R after diamonds 2" << endl << R << endl;
 
         if (addition) {
             uint limit;
@@ -140,13 +115,11 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             for (uint x = 0; x <= limit; x+=stepLength) {
                 for (uint y = 0; y <= limit; y+=stepLength) {
                     R(x,y) = R(x,y) + random()*RNGstddv;
-                    visited(x,y) += 2;
                 }
             }
             for (uint x = halfStepLength; x <= zerolength-halfStepLength; x+=stepLength) {
                 for (uint y = halfStepLength; y <= zerolength-halfStepLength; y+=stepLength) {
                     R(x,y) = R(x,y) + random()*RNGstddv;
-                    visited(x,y) += 3;
                 }
             }
             if (PBC) {
@@ -155,10 +128,6 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
                 R(zerolength,zerolength) = R(0,0);
             }
         }
-
-        cout << "positions visited by diamonds" << endl;
-        cout << visited << endl;
-        visited.zeros();
 
         stepLength /= 2;
         halfStepLength /= 2;
