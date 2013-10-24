@@ -10,27 +10,45 @@ void parseArgs(int nArgs, const char* argv[], int &power2, double &H, double &zM
 int main(int nArgs, const char *argv[]) {
     int power2;
     double H;
-    double zMin;
-    double zMax;
+    vec corners;
+    long seed;
+    double sigma;
+    bool addition;
     bool PBC;
-    long idum;
     int RNG;
 
-    parseArgs(nArgs, argv, power2, H, zMin, zMax, PBC, idum, RNG);
+//    parseArgs(nArgs, argv, power2, H, zMin, zMax, PBC, idum, RNG);
 
-    cout << "--- Diamond-square settings --------------------" << endl;
-    cout << "power2 = " << power2  << endl;
-    cout << "H (Hurst exponent) = " << H << endl;
-    cout << "z_min = " << zMin << endl;
-    cout << "z_max = " << zMax << endl;
-    cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
-    cout << "idum = " << idum << endl;
-    cout << "RNG = " << RNG << " (0 == no RNG, 1 == uniform, 2 == standard normal distribution)" << endl;
-    cout << "total number of points in grid = " << pow(pow(2, power2)+1, 2) << endl;
-    cout << "------------------------------------------------" << endl;
+    // testing //
+    power2 = 3;
+    H = 0.3;
+    corners.zeros(1);
+    corners(0) = 0.5;
+    seed = 1;
+    sigma = 1.0;
+    addition = true;
+//    addition = false;
+//    PBC = true;
+    PBC = false;
+    RNG = 2;
+    // testing //
+
+
+//    cout << "--- Diamond-square settings --------------------" << endl;
+//    cout << "power2 = " << power2  << endl;
+//    cout << "H (Hurst exponent) = " << H << endl;
+//    cout << "z_min = " << zMin << endl;
+//    cout << "z_max = " << zMax << endl;
+//    cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
+//    cout << "idum = " << idum << endl;
+//    cout << "RNG = " << RNG << " (0 == no RNG, 1 == uniform, 2 == standard normal distribution)" << endl;
+//    cout << "total number of points in grid = " << pow(pow(2, power2)+1, 2) << endl;
+//    cout << "------------------------------------------------" << endl;
 
     DiamondSquare generator;
-    mat heightMap = generator.generate(power2, H, zMin, zMax, PBC, idum, RNG);
+    mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
+
+    cout << endl << heightMap << endl;
 
     return 0;
 }

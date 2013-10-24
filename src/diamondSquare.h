@@ -12,27 +12,31 @@ class DiamondSquare {
 public:
     mat& generate(const uint power2,
             const double H,
-            const double minZValue,
-            const double maxZValue,
-            const bool PBC, const long idum,
+            const vec corners,
+            const long seed,
+            const double sigma,
+            const bool addition,
+            const bool PBC,
             const uint RNG);
 
 private:
-    void runDiamondSquare(mat &R, const double H);
-    void square(const uint x, const uint y, const uint squareSize, const uint squareSizeHalf, const double RNGstddv, mat &R);
-    void diamond(const uint x, const uint y, const uint stepLength, const uint halfStepLength, const double RNGstddv, mat &R);
+    void runDiamondSquare(mat &R, const double H, const double sigma);
+    double square(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const mat &R);
+    double diamond(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const mat &R);
 
-    void bottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
-    void rightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
+    double bottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
+    double rightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
 
     double random();
     double gaussianDeviate(long *seed);
 
-    uint power2, systemSize;
-    long idum;
     mat R;
+
+    uint power2, systemSize, zerolength;
     int RNG;
     bool PBC;
+    double sigma;
+    bool addition;
 };
 
 #endif // DIAMONDSQUARE_H
