@@ -5,45 +5,47 @@
 using namespace std;
 using namespace arma;
 
-void parseArgs(int nArgs, const char* argv[], int &power2, double &H, double &zMin, double &zMax, bool &PBC, long &idum, int &RNG);
-
 int main(int nArgs, const char *argv[]) {
     int power2;
     double H;
-    vec corners;
-    long seed;
+    vec corners = zeros(4);
     double sigma;
     bool addition;
     bool PBC;
     int RNG;
+    long seed;
 
-//    parseArgs(nArgs, argv, power2, H, zMin, zMax, PBC, idum, RNG);
+    if (nArgs < 3) {
+        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  addition  PBC[0|1]  RNG[0|1|2])  seed )" << endl;
+        exit(1);
+    }
 
-    // testing //
-    power2 = 3;
-    H = 0.3;
-    corners.zeros(1);
-    corners(0) = 0.5;
-    seed = 1;
-    sigma = 1.0;
-    addition = true;
-//    addition = false;
-//    PBC = true;
-    PBC = false;
-    RNG = 2;
-    // testing //
+    // arguments that are needed
+    power2 = atoi(argv[1]);
+    H      = atof(argv[2]);
 
+    // argument that have default values
+    corners(0) = nArgs > 4  ? atof(argv[3])  : 0.5;
+    corners(1) = nArgs > 5  ? atof(argv[4])  : corners(0);
+    corners(2) = nArgs > 6  ? atof(argv[5])  : corners(0);
+    corners(3) = nArgs > 7  ? atof(argv[6])  : corners(0);
+    sigma      = nArgs > 8  ? atof(argv[7])  : 1.0;
+    addition   = nArgs > 9  ? atoi(argv[8])  : false;
+    PBC        = nArgs > 10 ? atoi(argv[9])  : true;
+    RNG        = nArgs > 11 ? atoi(argv[10]) : 2;
+    seed       = nArgs > 12 ? atol(argv[11]) : 1;
 
-//    cout << "--- Diamond-square settings --------------------" << endl;
-//    cout << "power2 = " << power2  << endl;
-//    cout << "H (Hurst exponent) = " << H << endl;
-//    cout << "z_min = " << zMin << endl;
-//    cout << "z_max = " << zMax << endl;
-//    cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
-//    cout << "idum = " << idum << endl;
-//    cout << "RNG = " << RNG << " (0 == no RNG, 1 == uniform, 2 == standard normal distribution)" << endl;
-//    cout << "total number of points in grid = " << pow(pow(2, power2)+1, 2) << endl;
-//    cout << "------------------------------------------------" << endl;
+    cout << "--- Diamond-square settings --------------------" << endl;
+    cout << "power2 = " << power2  << endl;
+    cout << "H (Hurst exponent) = " << H << endl;
+    cout << "corners = "; for (uint i = 0; i < corners.size(); i++) cout << corners(i) << " "; cout << endl;
+    cout << "sigma = " << sigma << endl;
+    cout << "addition = " << std::boolalpha << addition << std::noboolalpha << endl;
+    cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
+    cout << "RNG = " << RNG << " (0 == no RNG, 1 == uniform, 2 == standard normal distribution)" << endl;
+    cout << "seed = " << seed << endl;
+    cout << "total number of points in grid = " << pow(pow(2, power2)+1, 2) << endl;
+    cout << "------------------------------------------------" << endl;
 
     DiamondSquare generator;
     mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
@@ -51,34 +53,6 @@ int main(int nArgs, const char *argv[]) {
     cout << endl << heightMap << endl;
 
     return 0;
-}
-
-void parseArgs(
-        int nArgs,
-        const char *argv[],
-        int &power2,
-        double &H,
-        double &zMin,
-        double &zMax,
-        bool &PBC,
-        long &idum,
-        int &RNG) {
-
-    if (nArgs < 3) {
-        cout << "Usage: ./diamondSquare  power2  filename  optional:(H[1,2]  position_of_bottom_surface  position_of_top_surface  surface_delta_z  PBC[0|1]  idum[unsigned int]  RNG[0|1|2])" << endl;
-        exit(1);
-    }
-
-    // arguments that are needed
-    power2   = atoi(argv[1]);
-
-    // argument that have default values
-    H         = nArgs > 3 ? atof(argv[2]) : 1.5;
-    zMin      = nArgs > 4 ? atof(argv[3]) : 0.0;
-    zMax      = nArgs > 5 ? atof(argv[4]) : 1.0;
-    PBC       = nArgs > 6 ? atoi(argv[5]) : true;
-    idum      = nArgs > 7 ? atol(argv[6]) : 1;
-    RNG       = nArgs > 8 ? atoi(argv[7]) : 2;
 }
 
 // to get QtCreator to run/debug programs correctly:

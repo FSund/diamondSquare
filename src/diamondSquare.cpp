@@ -19,47 +19,19 @@ mat &DiamondSquare::generate(
     srand(seed); // setting the seed of the RNG for both C++'s rand()/srand() and Armadillo's randu()/randn()
 
     R = zeros<mat>(systemSize, systemSize);
-    double delta = sigma;
-    if (corners.n_elem == 0) {
-        if (PBC) { // We need the same value in the corners if we are using periodic boundaries
-            R(0,0)                       = delta*random();
-            R(0,systemSize-1)            = R(0,0);
-            R(systemSize-1,0)            = R(0,0);
-            R(systemSize-1,systemSize-1) = R(0,0);
-        } else {
-            R(0,0)                       = delta*random();
-            R(0,systemSize-1)            = delta*random();
-            R(systemSize-1,0)            = delta*random();
-            R(systemSize-1,systemSize-1) = delta*random();
-        }
+    if (PBC) { // We need the same value in the corners if we are using periodic boundaries
+        R(0,0)                       = corners(0);
+        R(0,systemSize-1)            = R(0,0);
+        R(systemSize-1,0)            = R(0,0);
+        R(systemSize-1,systemSize-1) = R(0,0);
     } else {
-        if (PBC) { // We need the same value in the corners if we are using periodic boundaries
-            R(0,0)                       = corners(0);
-            R(0,systemSize-1)            = R(0,0);
-            R(systemSize-1,0)            = R(0,0);
-            R(systemSize-1,systemSize-1) = R(0,0);
-        } else {
-            R(0,0)                       = corners(0);
-            R(0,systemSize-1)            = corners(1);
-            R(systemSize-1,0)            = corners(2);
-            R(systemSize-1,systemSize-1) = corners(3);
-        }
+        R(0,0)                       = corners(0);
+        R(0,systemSize-1)            = corners(1);
+        R(systemSize-1,0)            = corners(2);
+        R(systemSize-1,systemSize-1) = corners(3);
     }
 
     runDiamondSquare(R, H, sigma);
-
-    if (RNG == 0 && PBC == 0) {
-        return R;
-    }
-
-//    // normalize to range [minZ maxZ]
-//    double minValue = min(min(R));
-//    double normFactor = 1.0/(max(max(R)) - minValue);
-//    for (uint i = 0; i < systemSize; i++) {
-//        for (uint j = 0; j < systemSize; j++) {
-//            R(i,j) = (R(i,j) - minValue)*normFactor*(maxZValue - minZValue) + minZValue;
-//        }
-//    }
 
     return R;
 }
