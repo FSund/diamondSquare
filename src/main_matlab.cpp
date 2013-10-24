@@ -9,27 +9,50 @@ using namespace arma;
 
 void parseArgs(int nArgs, const mxArray* argv[], int &power2, double &H, double &zMin, double &zMax, bool &PBC, long &idum, int &RNG);
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray*prhs[]) {
+void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     int power2;
     double H;
-    double zMin;
-    double zMax;
+    vec corners = zeros(4);
+    double sigma;
+    bool addition;
     bool PBC;
-    long idum;
     int RNG;
+    int seed;
 
-    parseArgs(nrhs, prhs, power2, H, zMin, zMax, PBC, idum, RNG);
+    if (nArgs < 2) {
+        mexErrMsgTxt("Arguments: power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  addition  PBC[0|1]  RNG[0|1|2])  seed[unsigned int] )");
+        exit(1);
+    }
 
-    // printf("power2 = %d\n", power2);
-    // printf("H      = %1.2f\n", H);
-    // printf("zMin   = %1.2f\n", zMin);
-    // printf("zMax   = %1.2f\n", zMax);
-    // printf("PBC    = %d\n", PBC);
-    // printf("idum   = %d\n", int(idum));
-    // printf("RNG    = %d\n", RNG);
+    // arguments that are needed
+    power2 = int(*mxGetPr(argv[0]));
+    H      = *mxGetPr(argv[1]);
+
+    // argument that have default values
+    corners(0) = nArgs > 2  ?     *mxGetPr(argv[2])   : 0.5;
+    corners(1) = nArgs > 3  ?     *mxGetPr(argv[3])   : corners(0);
+    corners(2) = nArgs > 4  ?     *mxGetPr(argv[4])   : corners(0);
+    corners(3) = nArgs > 5  ?     *mxGetPr(argv[5])   : corners(0);
+    sigma      = nArgs > 6  ?     *mxGetPr(argv[6])   : 1.0;
+    addition   = nArgs > 7  ? int(*mxGetPr(argv[7]))  : false;
+    PBC        = nArgs > 8  ? int(*mxGetPr(argv[8]))  : true;
+    RNG        = nArgs > 9 ? int(*mxGetPr(argv[9])) : 2;
+    seed       = nArgs > 10 ? ( int(*mxGetPr(argv[10])) >= 0 ? int(*mxGetPr(argv[10])) : 1 ) : 1;
+
+    // printf("power2     = %d\n", power2);
+    // printf("H          = %1.2f\n", H);
+    // printf("corners(0) = %1.2f\n", corners(0));
+    // printf("corners(1) = %1.2f\n", corners(1));
+    // printf("corners(2) = %1.2f\n", corners(2));
+    // printf("corners(3) = %1.2f\n", corners(3));
+    // printf("sigma      = %1.2f\n", sigma);
+    // printf("addition   = %d\n", int(addition));
+    // printf("PBC        = %d\n", int(PBC));
+    // printf("RNG        = %d\n", RNG);
+    // printf("seed       = %d\n", seed);
 
     DiamondSquare generator;
-    mat heightMap = generator.generate(power2, H, zMin, zMax, PBC, idum, RNG);
+    mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
 
     // create matrix for return argument
     int size = pow(2, power2) + 1;
@@ -44,37 +67,4 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray*prhs[]) {
     }
 
     return;
-}
-
-void parseArgs(
-        int nArgs,
-        const mxArray *prhs[],
-        int &power2,
-        double &H,
-        double &zMin,
-        double &zMax,
-        bool &PBC,
-        long &idum,
-        int &RNG) {
-
-    if (nArgs < 1) {
-        mexErrMsgTxt("Arguments: power2  optional:(H[1,2]  z_min  z_max  PBC[0|1]  idum[unsigned int]  RNG[0|1|2])");
-        // exit(1);
-    }
-
-    // arguments that are needed
-    power2   = int(*mxGetPr(prhs[0]));
-
-    // arguments that have default values
-    H         = nArgs > 1 ?       *mxGetPr(prhs[1])   : 1.5;
-    zMin      = nArgs > 2 ?       *mxGetPr(prhs[2])   : 0.0;
-    zMax      = nArgs > 3 ?       *mxGetPr(prhs[3])   : 1.0;
-    PBC       = nArgs > 4 ?  int( *mxGetPr(prhs[4]) ) : true;
-    idum      = nArgs > 5 ? long( *mxGetPr(prhs[5]) ) : 1;
-    RNG       = nArgs > 6 ?  int( *mxGetPr(prhs[6]) ) : 2;
-
-    if (RNG < 0 || RNG > 2) {
-        mexErrMsgTxt("ERROR: Unknown RNG, should be {0,1,2}. Using RNG = 2");
-        RNG = 2;
-    }
 }
