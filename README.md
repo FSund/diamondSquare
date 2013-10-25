@@ -13,7 +13,7 @@ Compile for use with the Matlab/Octave-script `matlab-compile/compile.m`. Then r
 
 * `power2` decides the size of the system
 * `H` is the Hurst-exponent
-* corner1-4 is the initial z-value in the corners of the grid
+* `corner1-4` is the initial z-value in the corners of the grid
 * `sigma` is the inital standard deviation of the random displacement
 * `addition` chooses between the successive random addition and successive random displacement algorithm
 * `PBC` sets if you want periodic boundaries
