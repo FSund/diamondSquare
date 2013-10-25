@@ -8,7 +8,8 @@
 using namespace std;
 using namespace arma;
 
-/*! \brief This class creates a randomly generated heightmap using either successive random additions algorithm or successive random displacement algorithm.
+/*! \brief This class creates a randomly generated heightmap using either successive random additions algorithm or
+           successive random displacement algorithm.
 
     The program starts with generating a 2d grid of size (2^power2+1)x(2^power2+1). We initialize the system by setting
     the z-value in the corners to a given value. We then generate the rest of the z-values by iteration.
@@ -36,7 +37,8 @@ using namespace arma;
     random displacement algorithm, set the boolean input variable "addition" to false.
 
     The methods used to produce the heightmaps are more thoroughly described in the book "Fractals" by Jens Feder,
-    sections 9.8 and 13.4 (1988 version), and in the book "The Science of Fractal Images", chapters 1 and 2 (1988 version).
+    sections 9.8 and 13.4 (1988 version), in the book "The Science of Fractal Images", chapters 1 and 2 (1988 version),
+    and in the book "Fundamental Algorithms for Computer Graphics" in the chapter "Random fractal forgeries" by Voss R. F.
 */
 
 class DiamondSquare {
@@ -64,20 +66,26 @@ public:
             # o o o # o o o #
         diamond-square    with PBC: the point "D" is calculated by interpolating the points 1,2,3, and 4.
         diamond-square without PBC: the point "D" is calculated by interpolating the points 1,2, and 3.
-        (when using PBC all four corners of the grid would be point 1, and points 3 and D would also appear on the right edge)
+        (when using PBC all four corners of the grid would be point 1, and points 3 and D would also appear on the right
+        edge)
 
         If addition is enabled we add a random displacement to all the points used in the interpolation for the new
         points in both the diamond- and the square-step. This is called the successive random addition algorithm. If
         addition is disabled we use the successive random displacement algorithm.
+
+        If periodic boundary conditions are enabled, the first element in \a corners is used for all corners.
 
         \param power2 an integer argument that sets the size of the grid.
         \param H the Hurst-exponent
         \param corners an armadillo vector with the initial values of the corners.
         \param seed the seed used for the random number generator.
         \param sigma the initial standard deviation of the random displacement.
-        \param addition a bool controls random displacement of the points used in the interpolation of a new point. If true we use the successive random additions algorithm, if false we use the successive random displacement algorithm.
+        \param addition a bool controls random displacement of the points used in the interpolation of a new point.
+               If true we use the successive random additions algorithm, if false we use the successive random
+               displacement algorithm.
         \param PBC a bool that controls periodic boundary conditions.
-        \param RNG an unsigned in the selects which random number generator to use (0 just returns 0.0, 1 uses a uniform distribution, 2 uses a normal distribution).
+        \param RNG an unsigned in the selects which random number generator to use (0 just returns 0.0, 1 uses a uniform
+               distribution, 2 uses a normal distribution).
     */
     mat& generate(const uint power2,
             const double H,

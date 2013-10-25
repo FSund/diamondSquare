@@ -16,7 +16,7 @@ int main(int nArgs, const char *argv[]) {
     int seed;
 
     if (nArgs < 3) {
-        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  addition  PBC[0|1]  RNG[0|1|2])  seed[unsigned int] )" << endl;
+        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  initial_RNG_stddv  addition  PBC[0|1]  RNG[0|1|2])  seed[unsigned int] )" << endl;
         exit(1);
     }
 

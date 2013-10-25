@@ -52,8 +52,8 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             }
         }
 
-        // Add random number to the corners of the squares used above
         if (addition) {
+            // Add a random number to the points used in the interpolations above
             uint limit;
             if (PBC) {
                 limit = systemSize - halfStepLength;
@@ -105,6 +105,7 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
         }
 
         if (addition) {
+            // Add a random number to the points used in the interpolations above
             uint limit;
             if (PBC) {
                 limit = systemSize - halfStepLength;
@@ -216,7 +217,7 @@ inline double DiamondSquare::random() {
     } else if (RNG == 1) {
         return (randu<double>() - 0.5); // uniform distribution in [-0.5,0.5]
     } else if (RNG == 2) {
-        return randn<double>(); // standard normal distribution (sigma = 1, my = 0)
+        return randn<double>(); // standard normal distribution (stddv = 1, mean = 0)
     } else {
         return NAN;
     }
