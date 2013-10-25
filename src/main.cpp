@@ -25,12 +25,12 @@ int main(int nArgs, const char *argv[]) {
     H      = atof(argv[2]);
 
     // argument that have default values
-    corners(0) = nArgs > 3  ? atof(argv[3])  : 0.5;
+    corners(0) = nArgs > 3  ? atof(argv[3])  : 0.0;
     corners(1) = nArgs > 4  ? atof(argv[4])  : corners(0);
     corners(2) = nArgs > 5  ? atof(argv[5])  : corners(0);
     corners(3) = nArgs > 6  ? atof(argv[6])  : corners(0);
     sigma      = nArgs > 7  ? atof(argv[7])  : 1.0;
-    addition   = nArgs > 8  ? atoi(argv[8])  : false;
+    addition   = nArgs > 8  ? atoi(argv[8])  : true;
     PBC        = nArgs > 9  ? atoi(argv[9])  : true;
     RNG        = nArgs > 10 ? atoi(argv[10]) : 2;
     seed       = nArgs > 11 ? ( atoi(argv[11]) >= 0 ? atoi(argv[11]) : 1 ) : 1;

@@ -29,14 +29,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     H      = *mxGetPr(argv[1]);
 
     // argument that have default values
-    corners(0) = nArgs > 2  ?     *mxGetPr(argv[2])   : 0.5;
-    corners(1) = nArgs > 3  ?     *mxGetPr(argv[3])   : corners(0);
-    corners(2) = nArgs > 4  ?     *mxGetPr(argv[4])   : corners(0);
-    corners(3) = nArgs > 5  ?     *mxGetPr(argv[5])   : corners(0);
-    sigma      = nArgs > 6  ?     *mxGetPr(argv[6])   : 1.0;
-    addition   = nArgs > 7  ? int(*mxGetPr(argv[7]))  : false;
-    PBC        = nArgs > 8  ? int(*mxGetPr(argv[8]))  : true;
-    RNG        = nArgs > 9 ? int(*mxGetPr(argv[9])) : 2;
+    corners(0) = nArgs > 2  ?     *mxGetPr(argv[2])  : 0.0;
+    corners(1) = nArgs > 3  ?     *mxGetPr(argv[3])  : corners(0);
+    corners(2) = nArgs > 4  ?     *mxGetPr(argv[4])  : corners(0);
+    corners(3) = nArgs > 5  ?     *mxGetPr(argv[5])  : corners(0);
+    sigma      = nArgs > 6  ?     *mxGetPr(argv[6])  : 1.0;
+    addition   = nArgs > 7  ? int(*mxGetPr(argv[7])) : true;
+    PBC        = nArgs > 8  ? int(*mxGetPr(argv[8])) : true;
+    RNG        = nArgs > 9  ? int(*mxGetPr(argv[9])) : 2;
     seed       = nArgs > 10 ? ( int(*mxGetPr(argv[10])) >= 0 ? int(*mxGetPr(argv[10])) : 1 ) : 1;
 
     // printf("power2     = %d\n", power2);
