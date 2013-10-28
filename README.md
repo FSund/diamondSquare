@@ -1,7 +1,7 @@
 diamondSquare
 =============
 
-Random terrain generator using the diamond square-algorithm.
+Random terrain generator using the diamond square-algorithm, or the random midpoint displacement algorithm. You can choose between successive random addition and successive random displacement.
 
 Source files best viewed using Qt Creator.
 
