@@ -16,25 +16,40 @@ using namespace arma;
 
     The algorithm consists of two separate steps, called "diamond" and "square".
 
-    In the diamond-step we find the z-value of a point in the grid by taking the average of four points: above, below,
-    right of, and left of the point itself, and adding a random number (usually a normally distributed random number, but
-    uniform distribution is also available). The four points make up a diamond with the point we want to find in the
-    center, thus we call it the diamon-step.
+    In the diamond-step we find the z-value of a point (x,y) in the grid by taking the average of four points:
+    (x+d, y), (x-d,y), (x,y+d), (x,y-d), where d is a steplength, and adding a random number (usually a normally
+    distributed random number, but uniform distribution is also available). The four points make up a diamond centered
+    around (x,y), thus we call it the diamond-step. See the ASCII-illustration below.
 
-    In the square-step we find the z-value in a point in the grid by taking the average of four diagonal neighbors of the
-    point. These four neighbors make up a square witht he point we want to find in the center, thus we call it the
-    square-step.
+        o o D o o
+        o o o o o
+        D o X o D
+        o o o o o
+        o o D o o
+      Figure: The diamond-step. We interpolate the points marked "D" and add a random number to find the value in "X"
+
+    In the square-step we find the z-value of a point (x,y) average of four diagonal neighbors of the point: (x+d, y+d),
+    (x+d,y-d), (x-d,y+d), (x-d,y-d). These four neighbors make up a square witht he point we want to find in the center,
+    thus we call it the square-step. See the ASCII-illustration below.
+
+        S o o o S
+        o o o o o
+        o o X o o
+        o o o o o
+        S o o o S
+      Figure: The square-step. We interpolate the points marked "S" and add a random number to find the value in "X"
 
     When generating the heightmap we first do the square step once, interpolating the four initial points. We then do the
     diamond-step four times, filling in the values in the center of the four edges of the grid. We then continue doing
-    this until the whole grid is filled in. The standard deviation of the random displacement in each step is 0.5^(0.5*H)
-    times the standard deviation in the last step. This is to produce Brownian motion with a Hurst-exponent of H.
+    this until the whole grid is filled in. The standard deviation of the random displacement in each step is multiplied
+    with sigma_(i-1)*0.5^(0.5*H), where sigma_(i-1) is the standard deviation in the last step. This is to produce
+    Brownian motion with a Hurst-exponent of H.
 
     By default the program also adds a random displacement to the points used in the interpolation. This is called the
     successive random additions algorithm. For more info on what this does see the book "The Science of Fractal Images",
     chapter 2 "Algorithms for random fractals", section 2.3.3 (available here:
     http://bringerp.free.fr/Files/Captain%20Blood/Saupe87d.pdf). To turn of this behaviour, and use the successive
-    random displacement algorithm, set the boolean input variable "addition" to false.
+    random displacement algorithm instead, set the boolean input variable "addition" to false.
 
     The methods used to produce the heightmaps are more thoroughly described in the book "Fractals" by Jens Feder,
     sections 9.8 and 13.4 (1988 version), in the book "The Science of Fractal Images", chapters 1 and 2 (1988 version),

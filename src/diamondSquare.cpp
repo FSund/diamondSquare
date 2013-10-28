@@ -45,7 +45,7 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
     for (uint depth = 1; depth <= power2; depth++) {
 
         // Squares
-        RNGstddv = RNGstddv*pow(0.5, 0.5*H);
+        RNGstddv *= pow(0.5, 0.5*H);
         for (uint x = halfStepLength; x < systemSize - halfStepLength; x += stepLength) {
             for (uint y = halfStepLength; y < systemSize - halfStepLength; y += stepLength) {
                 R(x,y) = square(x, y, halfStepLength, RNGstddv, R);
@@ -60,9 +60,9 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             } else {
                 limit = systemSize;
             }
-            for (uint x = 0; x < limit; x+=stepLength) {
-                for (uint y = 0; y < limit; y+=stepLength) {
-                    R(x,y) = R(x,y) + random()*RNGstddv;
+            for (uint x = 0; x < limit; x += stepLength) {
+                for (uint y = 0; y < limit; y += stepLength) {
+                    R(x,y) += random()*RNGstddv;
                 }
             }
             if (PBC) {
@@ -73,7 +73,7 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
         }
 
         // Diamonds
-        RNGstddv = RNGstddv*pow(0.5, 0.5*H);
+        RNGstddv *= pow(0.5, 0.5*H);
         for (uint x = 0; x < systemSize - halfStepLength; x += stepLength) {
             for (uint y = halfStepLength; y < systemSize - halfStepLength; y += stepLength) {
                 R(x,y) = diamond(x, y, halfStepLength, RNGstddv, R);
@@ -112,14 +112,14 @@ void DiamondSquare::runDiamondSquare(mat& R, const double H, const double sigma)
             } else {
                 limit = systemSize;
             }
-            for (uint x = 0; x < limit; x+=stepLength) {
-                for (uint y = 0; y < limit; y+=stepLength) {
-                    R(x,y) = R(x,y) + random()*RNGstddv;
+            for (uint x = 0; x < limit; x += stepLength) {
+                for (uint y = 0; y < limit; y += stepLength) {
+                    R(x,y) += random()*RNGstddv;
                 }
             }
-            for (uint x = halfStepLength; x < systemSize-halfStepLength; x+=stepLength) {
-                for (uint y = halfStepLength; y < systemSize-halfStepLength; y+=stepLength) {
-                    R(x,y) = R(x,y) + random()*RNGstddv;
+            for (uint x = halfStepLength; x < systemSize-halfStepLength; x += stepLength) {
+                for (uint y = halfStepLength; y < systemSize-halfStepLength; y += stepLength) {
+                    R(x,y) += random()*RNGstddv;
                 }
             }
             if (PBC) {
