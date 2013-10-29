@@ -165,7 +165,7 @@ double DiamondSquare::diamond(
                 R(x+halfStepLength, y) +
                 R(R.n_rows-1-halfStepLength, y));
         } else {
-            average = 0.333333333333333333333333333333*(
+            average = (1.0/3.0)*(
                 R(x, y+halfStepLength) +
                 R(x, y-halfStepLength) +
                 R(x+halfStepLength, y));
@@ -178,7 +178,7 @@ double DiamondSquare::diamond(
                 R(x+halfStepLength, y) +
                 R(x-halfStepLength, y));
         } else {
-            average = 0.25*(
+            average = (1.0/3.0)*(
                 R(x, y+halfStepLength) +
                 R(x+halfStepLength, y) +
                 R(x-halfStepLength, y));
@@ -196,7 +196,7 @@ double DiamondSquare::diamond(
 
 double DiamondSquare::nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat& R) {
 
-    return random()*RNGstddv + 0.33333333333333333333333*(
+    return random()*RNGstddv + (1.0/3.0)*(
         R(x-halfStepLength, y) +
         R(x, y+halfStepLength) +
         R(x, y-halfStepLength));
@@ -204,7 +204,7 @@ double DiamondSquare::nonPBCbottomEdgeDiamonds(const uint x, const uint y, const
 
 double DiamondSquare::nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat& R) {
 
-    return random()*RNGstddv + 0.33333333333333333333333*(
+    return random()*RNGstddv + (1.0/3.0)*(
         R(x, y-halfStepLength) +
         R(x+halfStepLength, y) +
         R(x-halfStepLength, y));

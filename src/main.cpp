@@ -50,7 +50,7 @@ int main(int nArgs, const char *argv[]) {
     DiamondSquare generator;
     mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
 
-    cout << endl << heightMap << endl;
+//    cout << endl << heightMap << endl;
 
     return 0;
 }
