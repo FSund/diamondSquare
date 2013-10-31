@@ -3,12 +3,10 @@ ROOT_DIR = $$PWD
 SRC_DIR = $$PWD/src
 INCLUDEPATH += $$ROOT_DIR
 
-LIBS += -larmadillo
+LIBS +=
 
 # O3 optimization
 release {
-    DEFINES += ARMA_NO_DEBUG
-    DEFINES += ARMA_USE_CXX11
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -O3
 }

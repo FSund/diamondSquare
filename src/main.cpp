@@ -1,14 +1,14 @@
 #include <iostream>
 #include <cstdlib>      // atoi, atof, atol
-#include <armadillo>
 #include <src/diamondSquare.h>
+#include <math.h>
+
 using namespace std;
-using namespace arma;
 
 int main(int nArgs, const char *argv[]) {
     int power2;
     double H;
-    vec corners = zeros(4);
+    vector<double> corners(4,0);
     double sigma;
     bool addition;
     bool PBC;
@@ -25,10 +25,10 @@ int main(int nArgs, const char *argv[]) {
     H      = atof(argv[2]);
 
     // argument that have default values
-    corners(0) = nArgs > 3  ? atof(argv[3])  : 0.0;
-    corners(1) = nArgs > 4  ? atof(argv[4])  : corners(0);
-    corners(2) = nArgs > 5  ? atof(argv[5])  : corners(0);
-    corners(3) = nArgs > 6  ? atof(argv[6])  : corners(0);
+    corners[0] = nArgs > 3  ? atof(argv[3])  : 0.0;
+    corners[1] = nArgs > 4  ? atof(argv[4])  : corners[0];
+    corners[2] = nArgs > 5  ? atof(argv[5])  : corners[0];
+    corners[3] = nArgs > 6  ? atof(argv[6])  : corners[0];
     sigma      = nArgs > 7  ? atof(argv[7])  : 1.0;
     addition   = nArgs > 8  ? atoi(argv[8])  : true;
     PBC        = nArgs > 9  ? atoi(argv[9])  : true;
@@ -38,7 +38,7 @@ int main(int nArgs, const char *argv[]) {
     cout << "--- Diamond-square settings --------------------" << endl;
     cout << "power2 = " << power2  << endl;
     cout << "H (Hurst exponent) = " << H << endl;
-    cout << "corners = "; for (uint i = 0; i < corners.size(); i++) cout << corners(i) << " "; cout << endl;
+    cout << "corners = "; for (uint i = 0; i < 4; i++) cout << corners[i] << " "; cout << endl;
     cout << "sigma = " << sigma << endl;
     cout << "addition = " << std::boolalpha << addition << std::noboolalpha << endl;
     cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
@@ -48,7 +48,7 @@ int main(int nArgs, const char *argv[]) {
     cout << "------------------------------------------------" << endl;
 
     DiamondSquare generator;
-    mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
+    vector<vector<double> > heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
 
 //    cout << endl << heightMap << endl;
 

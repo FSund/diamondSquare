@@ -2,11 +2,10 @@
 #define DIAMONDSQUARE_H
 
 #include <iostream>
-
-#include <armadillo>
-
+#include <vector>
 using namespace std;
-using namespace arma;
+typedef unsigned int uint;
+class Random;
 
 /*! \brief This class creates a randomly generated heightmap using either successive random additions algorithm or
            successive random displacement algorithm.
@@ -102,9 +101,9 @@ public:
         \param RNG an unsigned in the selects which random number generator to use (0 just returns 0.0, 1 uses a uniform
                distribution, 2 uses a normal distribution).
     */
-    mat& generate(const uint power2,
+    vector<vector<double> >& generate(const uint power2,
             const double H,
-            const vec corners,
+            const vector<double> corners,
             const long seed,
             const double sigma,
             const bool addition,
@@ -115,9 +114,9 @@ private:
     /*!
         The function that does the diamond- and square-steps.
     */
-    void runDiamondSquare(mat &R, const double H, const double sigma);
-    double square(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const mat &R);
-    double diamond(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const mat &R);
+    void runDiamondSquare(vector<vector<double> > &R, const double H, const double sigma);
+    double square(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const vector<vector<double> > &R);
+    double diamond(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const vector<vector<double> > &R);
 
     /*!
         Since we can toggle the periodic boundaries we have made separate methods to do the diamond-step without
@@ -133,12 +132,12 @@ private:
         \param R the armadillo matrix that has the current heightmap.
         \return returns the value of the new point.
      */
-    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
+    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, vector<vector<double> > &R);
     /*!
         \brief rightEdgeDiamonds See \a nonPBCbottomEdgeDiamonds.
         \sa nonPBCbottomEdgeDiamonds()
     */
-    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, mat &R);
+    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, vector<vector<double> > &R);
 
     /*!
         \brief random the function that generates the random number for the random displacement.
@@ -147,12 +146,13 @@ private:
      */
     double random();
 
-    mat R;
+    vector<vector<double> > R;
     uint power2, systemSize, zerolength;
     int RNG;
     bool PBC;
     double sigma;
     bool addition;
+    Random *rnd;
 };
 
 #endif // DIAMONDSQUARE_H
