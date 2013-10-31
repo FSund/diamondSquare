@@ -1,9 +1,8 @@
-#include <armadillo>
+#include <vector>
 #include <mex.h>
-#include "diamondSquare.h"
+#include <src/diamondSquare/diamondSquare.h>
 
 using namespace std;
-using namespace arma;
 
 #define R_OUT plhs[0]
 
@@ -12,7 +11,7 @@ void parseArgs(int nArgs, const mxArray* argv[], int &power2, double &H, double 
 void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     int power2;
     double H;
-    vec corners = zeros(4);
+    vector<double> corners(4,0);
     double sigma;
     bool addition;
     bool PBC;
@@ -29,15 +28,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     H      = *mxGetPr(argv[1]);
 
     // argument that have default values
-    corners(0) = nArgs > 2  ?     *mxGetPr(argv[2])  : 0.0;
-    corners(1) = nArgs > 3  ?     *mxGetPr(argv[3])  : corners(0);
-    corners(2) = nArgs > 4  ?     *mxGetPr(argv[4])  : corners(0);
-    corners(3) = nArgs > 5  ?     *mxGetPr(argv[5])  : corners(0);
-    sigma      = nArgs > 6  ?     *mxGetPr(argv[6])  : 1.0;
-    addition   = nArgs > 7  ? int(*mxGetPr(argv[7])) : true;
-    PBC        = nArgs > 8  ? int(*mxGetPr(argv[8])) : true;
-    RNG        = nArgs > 9  ? int(*mxGetPr(argv[9])) : 2;
-    seed       = nArgs > 10 ? ( int(*mxGetPr(argv[10])) >= 0 ? int(*mxGetPr(argv[10])) : 1 ) : 1;
+    corners[0] = nArgs > 2  ?     *mxGetPr(argv[2])   : 0.0;
+    corners[1] = nArgs > 3  ?     *mxGetPr(argv[3])   : corners[0];
+    corners[2] = nArgs > 4  ?     *mxGetPr(argv[4])   : corners[0];
+    corners[3] = nArgs > 5  ?     *mxGetPr(argv[5])   : corners[0];
+    sigma      = nArgs > 6  ?     *mxGetPr(argv[6])   : 1.0;
+    addition   = nArgs > 7  ? int(*mxGetPr(argv[7]))  : true;
+    PBC        = nArgs > 8  ? int(*mxGetPr(argv[8]))  : true;
+    RNG        = nArgs > 9  ? int(*mxGetPr(argv[9]))  : 2;
+    seed       = nArgs > 10 ? int(*mxGetPr(argv[10])) : 1;
 
     // printf("power2     = %d\n", power2);
     // printf("H          = %1.2f\n", H);
@@ -52,7 +51,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     // printf("seed       = %d\n", seed);
 
     DiamondSquare generator;
-    mat heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
+    vector<vector<double> > heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
 
     // create matrix for return argument
     int size = pow(2, power2) + 1;
@@ -62,7 +61,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            R_out[i + j*size] = heightMap(i,j);
+            R_out[i + j*size] = heightMap[i][j];
         }
     }
 

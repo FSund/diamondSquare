@@ -1,9 +1,5 @@
 # Directories
-ROOT_DIR = $$PWD
-SRC_DIR = $$PWD/src
-INCLUDEPATH += $$ROOT_DIR
-
-LIBS +=
+INCLUDEPATH += $$PWD
 
 # O3 optimization
 release {

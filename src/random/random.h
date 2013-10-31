@@ -1,4 +1,7 @@
-#pragma once
+#ifndef RANDOM_H
+#define RANDOM_H
+
+#include <cmath>
 
 #define IA 16807
 #define IM 2147483647
@@ -20,3 +23,5 @@ public:
     double next_double();
     double next_gauss();
 };
+
+#endif // RANDOM_H

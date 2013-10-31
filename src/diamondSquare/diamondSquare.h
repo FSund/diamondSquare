@@ -1,12 +1,3 @@
-#ifndef DIAMONDSQUARE_H
-#define DIAMONDSQUARE_H
-
-#include <iostream>
-#include <vector>
-using namespace std;
-typedef unsigned int uint;
-class Random;
-
 /*! \brief This class creates a randomly generated heightmap using either successive random additions algorithm or
            successive random displacement algorithm.
 
@@ -54,6 +45,19 @@ class Random;
     sections 9.8 and 13.4 (1988 version), in the book "The Science of Fractal Images", chapters 1 and 2 (1988 version),
     and in the book "Fundamental Algorithms for Computer Graphics" in the chapter "Random fractal forgeries" by Voss R. F.
 */
+
+#ifndef DIAMONDSQUARE_H
+#define DIAMONDSQUARE_H
+
+#include <iostream>
+#include <vector>
+#include <cmath>        // pow,
+
+#include <src/random/random.h>
+
+typedef unsigned int uint;
+
+using namespace std;
 
 class DiamondSquare {
 public:

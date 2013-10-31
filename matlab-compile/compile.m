@@ -1,1 +1,2 @@
-mex ../src/main_matlab.cpp ../src/diamondSquare.cpp
+mex main.cpp -I../ ../src/diamondSquare/diamondSquare.cpp ../src/random/random.cpp
+movefile('main.mex','diamondSquare.mex');

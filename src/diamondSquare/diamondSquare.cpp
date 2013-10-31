@@ -1,7 +1,4 @@
-#include "diamondSquare.h"
-#include "random.h"
-#include <math.h>
-
+#include <src/diamondSquare/diamondSquare.h>
 
 vector<vector<double > >&DiamondSquare::generate(const uint power2,
         const double H,
@@ -18,7 +15,7 @@ vector<vector<double > >&DiamondSquare::generate(const uint power2,
     this->RNG = RNG;
     systemSize = pow(2.0, power2) + 1;
     rnd = new Random(-(abs(seed)));
-    srand(seed); // setting the seed of the RNG for both C++'s rand()/srand() and Armadillo's randu()/randn()
+
     R.resize(systemSize);
     for(int i=0; i<systemSize; i++) R[i].resize(systemSize,0);
 

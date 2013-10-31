@@ -3,13 +3,13 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-include(defaults.pri)
-
 HEADERS += \
-    src/diamondSquare.h \
-    src/random.h
+    src/diamondSquare/diamondSquare.h \
+    src/random/random.h
 
 SOURCES += \
     src/main.cpp \
-    src/random.cpp \
-    src/diamondSquare.cpp
+    src/random/random.cpp \
+    src/diamondSquare/diamondSquare.cpp
+
+include(defaults.pri)

@@ -1,9 +1,4 @@
-#include "random.h"
-#include <math.h>
-#include <iostream>
-#include <math.h>
-
-using namespace std;
+#include <src/random/random.h>
 
 Random::Random(long seed) {
    *idum = seed;

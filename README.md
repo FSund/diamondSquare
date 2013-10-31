@@ -9,7 +9,7 @@ Usage
 -----
 Compile for use with the Matlab/Octave-script `matlab-compile/compile.m`. Then run in Matlab/Octave using
 
-    main_matlab(power2, H, corner1, corner2, corner3, corner4, sigma, addition, PBC, RNG, seed)
+    diamondSquare(power2, H, corner1, corner2, corner3, corner4, sigma, addition, PBC, RNG, seed)
 
 * `power2` decides the size of the system
 * `H` is the Hurst-exponent

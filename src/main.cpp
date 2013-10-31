@@ -1,7 +1,8 @@
 #include <iostream>
+#include <vector>
+#include <cmath>        // pow,
 #include <cstdlib>      // atoi, atof, atol
-#include <src/diamondSquare.h>
-#include <math.h>
+#include <src/diamondSquare/diamondSquare.h>
 
 using namespace std;
 
@@ -33,7 +34,7 @@ int main(int nArgs, const char *argv[]) {
     addition   = nArgs > 8  ? atoi(argv[8])  : true;
     PBC        = nArgs > 9  ? atoi(argv[9])  : true;
     RNG        = nArgs > 10 ? atoi(argv[10]) : 2;
-    seed       = nArgs > 11 ? ( atoi(argv[11]) >= 0 ? atoi(argv[11]) : 1 ) : 1;
+    seed       = nArgs > 11 ? atoi(argv[11]) : 1;
 
     cout << "--- Diamond-square settings --------------------" << endl;
     cout << "power2 = " << power2  << endl;
