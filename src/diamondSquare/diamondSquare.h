@@ -118,9 +118,9 @@ private:
     /*!
         The function that does the diamond- and square-steps.
     */
-    void runDiamondSquare(vector<vector<double> > &R, const double H, const double sigma);
-    double square(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const vector<vector<double> > &R);
-    double diamond(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, const vector<vector<double> > &R);
+    void runDiamondSquare(vector<vector<double> > &R, const double H, double initialSigma);
+    double meanOfSquare(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
+    double meanOfDiamond(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
 
     /*!
         Since we can toggle the periodic boundaries we have made separate methods to do the diamond-step without
@@ -136,12 +136,12 @@ private:
         \param R the armadillo matrix that has the current heightmap.
         \return returns the value of the new point.
      */
-    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, vector<vector<double> > &R);
+    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> > &R);
     /*!
         \brief rightEdgeDiamonds See \a nonPBCbottomEdgeDiamonds.
         \sa nonPBCbottomEdgeDiamonds()
     */
-    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, const double RNGstddv, vector<vector<double> > &R);
+    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> > &R);
 
     /*!
         \brief random the function that generates the random number for the random displacement.
@@ -151,10 +151,9 @@ private:
     double random();
 
     vector<vector<double> > R;
-    uint power2, systemSize, zerolength;
+    uint power2, systemSize;
     int RNG;
     bool PBC;
-    double sigma;
     bool addition;
     Random *rnd;
 };
