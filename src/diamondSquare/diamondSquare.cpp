@@ -38,14 +38,18 @@ vector<vector<double > >&DiamondSquare::generate(const uint power2,
 
 // DEBUG //
 #include <iomanip>
-template<typename T>
-void print_matrix(const vector<vector<T> > mat) {
-    for (typename std::vector<vector<T> >::const_iterator i = mat.begin(); i != mat.end(); ++i) {
+template <typename T>
+std::ostream& operator << (std::ostream& stream, const std::vector<vector<T> >& v) {
+    ios_base::fmtflags f(stream.flags()); // Store current flags, so we can reset them later
+    stream << scientific << setprecision(3); // << fixed // Set formatting flags
+    for (typename std::vector<vector<T> >::const_iterator i = v.begin(); i != v.end(); ++i) {
         for (typename std::vector<T>::const_iterator j = i->begin(); j != i->end(); ++j) {
-            cout << setw(10) << setprecision(5) << fixed << *j << ' ';
+            stream << setw(10) << *j << " ";
         }
-        cout << endl;
+        stream << endl;
     }
+    stream.flags(f); // Reset flags to previous state
+    return stream;
 }
 // DEBUG //
 
