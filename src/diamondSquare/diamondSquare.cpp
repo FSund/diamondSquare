@@ -10,7 +10,6 @@ vector<vector<double > >&DiamondSquare::generate(const uint power2,
         const uint RNG) {
     this->power2 = power2;
     this->addition = addition;
-//    this->initialSigma = sigma;
     this->PBC = PBC;
     this->RNG = RNG;
     systemSize = pow(2.0, power2) + 1;
@@ -40,6 +39,11 @@ vector<vector<double > >&DiamondSquare::generate(const uint power2,
 #include <iomanip>
 template <typename T>
 std::ostream& operator << (std::ostream& stream, const std::vector<vector<T> >& v) {
+
+    // Usage: 
+    //     v = vector<vector<T> >( /*do something smart here*/ );
+    //     cout << v;
+
     ios_base::fmtflags f(stream.flags()); // Store current flags, so we can reset them later
     stream << scientific << setprecision(3); // << fixed // Set formatting flags
     for (typename std::vector<vector<T> >::const_iterator i = v.begin(); i != v.end(); ++i) {
@@ -69,9 +73,14 @@ void DiamondSquare::runDiamondSquare(vector<vector<double> >& R, const double H,
         }
         if (addition) {
             // Add random number to all old points
-            // TODO: Could optimize this loop by not looping over the right and bottom edges if using PBC...
-            for (uint x = 0; x < systemSize; x += stepLength) {
-                for (uint y = 0; y < systemSize; y += stepLength) {
+            uint limit;
+            if (PBC) {
+                limit = systemSize - halfStepLength; // Skip right and bottom edge if using periodic boundary conditions
+            } else {
+                limit = systemSize;
+            }
+            for (uint x = 0; x < limit; x += stepLength) {
+                for (uint y = 0; y < limit; y += stepLength) {
                     R[x][y] += sigma*random();
                 }
             }
@@ -126,7 +135,7 @@ void DiamondSquare::runDiamondSquare(vector<vector<double> >& R, const double H,
             // Add a random number to all old points
             uint limit;
             if (PBC) {
-                limit = systemSize - halfStepLength;
+                limit = systemSize - halfStepLength; // Skip right and bottom edge if using periodic boundary conditions
             } else {
                 limit = systemSize;
             }
