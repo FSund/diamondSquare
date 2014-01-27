@@ -25,36 +25,44 @@ int main(int nArgs, const char *argv[]) {
         exit(1);
     }
 
+    uint i = 1; // argument counter
+
     // arguments that are needed
-    power2 = atoi(argv[1]);
-    H      = atof(argv[2]);
+    power2 = atoi(argv[i++]);
+    H      = atof(argv[i++]);
 
     // argument that have default values
-    randomCorners = nArgs > 3  ? atoi(argv[3])  : true;
+    randomCorners = nArgs > i ? atoi(argv[i++])  : true;
     if (!randomCorners) {
         corners.resize(4);
-        corners[0] = nArgs > 4  ? atof(argv[4])  : 0.0;
-        corners[1] = nArgs > 5  ? atof(argv[5])  : corners[0];
-        corners[2] = nArgs > 6  ? atof(argv[6])  : corners[0];
-        corners[3] = nArgs > 7  ? atof(argv[7])  : corners[0];
+        corners[0] = nArgs > i ? atof(argv[i++])  : 0.0;
+        corners[1] = nArgs > i ? atof(argv[i++])  : corners[0];
+        corners[2] = nArgs > i ? atof(argv[i++])  : corners[0];
+        corners[3] = nArgs > i ? atof(argv[i++])  : corners[0];
     }
+    sigma        = nArgs > i ? atof(argv[i++]) : 1.0;
+    randomFactor = nArgs > i ? atof(argv[i++]) : 1.0/sqrt(2.0);
+    addition     = nArgs > i ? atoi(argv[i++]) : true;
+    PBC          = nArgs > i ? atoi(argv[i++]) : true;
+    RNG          = nArgs > i ? atoi(argv[i++]) : 2;
+    seed         = nArgs > i ? atoi(argv[i++]) : 1;
 
-    sigma        = nArgs >  8 ? atof(argv[8])  : 1.0;
-    randomFactor = nArgs >  9 ? atof(argv[9])  : 1.0/sqrt(2.0);
-    addition     = nArgs > 10 ? atoi(argv[10]) : true;
-    PBC          = nArgs > 11 ? atoi(argv[11]) : true;
-    RNG          = nArgs > 12 ? atoi(argv[12]) : 2;
-    seed         = nArgs > 13 ? atoi(argv[13]) : 1;
-
-    if (!addition && randomFactor != 0.5) {
-        cout << "Warning: If not using addition, the random number factor should be 0.5." << endl;
+    if (!addition && abs(randomFactor-1.0/sqrt(2.0)) > 0.0005) {
+        cout << "Warning: If not using addition, the random number factor should be 1/sqrt(2) ~ 0.707." << endl;
         randomFactor = 0.5;
     }
 
     cout << "--- Diamond-square settings --------------------" << endl;
     cout << "power2 = " << power2  << endl;
     cout << "H (Hurst exponent) = " << H << endl;
-    cout << "corners = "; for (uint i = 0; i < corners.size(); i++) cout << corners[i] << " "; cout << endl;
+    cout << "corners = " << endl;
+    for (uint i = 0; i < 4; i++) {
+        cout << "              = ";
+        if (i < corners.size())
+            cout << corners[i] << " " << endl;
+        else
+            cout << "not set" << endl;
+    }
     cout << "sigma = " << sigma << endl;
     cout << "addition = " << std::boolalpha << addition << std::noboolalpha << endl;
     cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;

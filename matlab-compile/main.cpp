@@ -1,5 +1,5 @@
 #include <vector>
-#include <cmath>    // sqrt
+#include <cmath>    // sqrt, abs
 #include <mex.h>
 #include <src/diamondSquare/diamondSquare.h>
 
@@ -26,36 +26,38 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
         exit(1);
     }
 
+    uint i = 0; // argument counter
+
     // arguments that are needed
-    power2 = int(*mxGetPr(argv[0]));
-    H      = *mxGetPr(argv[1]);
+    power2 = int(*mxGetPr(argv[i++]));
+    H      =     *mxGetPr(argv[i++]);
 
     // argument that have default values
-    randomCorners = nArgs > 2 ? int(*mxGetPr(argv[2]))  : true;
+    randomCorners = nArgs > i ? int(*mxGetPr(argv[i++]))  : true;
     if (!randomCorners) {
         corners.resize(4);
-        corners[0] = nArgs > 3 ? *mxGetPr(argv[3]) : 0.0;
-        corners[1] = nArgs > 4 ? *mxGetPr(argv[4]) : corners[0];
-        corners[2] = nArgs > 5 ? *mxGetPr(argv[5]) : corners[0];
-        corners[3] = nArgs > 6 ? *mxGetPr(argv[6]) : corners[0];
+        corners[0]   = nArgs > i ?     *mxGetPr(argv[i++])  : 0.0;
+        corners[1]   = nArgs > i ?     *mxGetPr(argv[i++])  : corners[0];
+        corners[2]   = nArgs > i ?     *mxGetPr(argv[i++])  : corners[1];
+        corners[3]   = nArgs > i ?     *mxGetPr(argv[i++])  : corners[2];
     }
+    sigma        = nArgs > i ?     *mxGetPr(argv[i++])  : 1.0;
+    randomFactor = nArgs > i ?     *mxGetPr(argv[i++])  : 1.0/sqrt(2);
+    addition     = nArgs > i ? int(*mxGetPr(argv[i++])) : true;
+    PBC          = nArgs > i ? int(*mxGetPr(argv[i++])) : true;
+    RNG          = nArgs > i ? int(*mxGetPr(argv[i++])) : 2;
+    seed         = nArgs > i ? int(*mxGetPr(argv[i++])) : 1;
 
-    sigma        = nArgs >  7 ?     *mxGetPr(argv[7])   : 1.0;
-    randomFactor = nArgs >  8 ?     *mxGetPr(argv[8])   : 1.0/sqrt(2);
-    addition     = nArgs >  9 ? int(*mxGetPr(argv[9]))  : true;
-    PBC          = nArgs > 10 ? int(*mxGetPr(argv[10])) : true;
-    RNG          = nArgs > 11 ? int(*mxGetPr(argv[11])) : 2;
-    seed         = nArgs > 12 ? int(*mxGetPr(argv[12])) : 1;
-
-    if (!addition && randomFactor != 0.5) {
-        mexWarnMsgTxt("Warning: If not using addition, the random number factor should be 0.5.");
-        randomFactor = 0.5;
+    if (!addition && abs(randomFactor-1.0/sqrt(2.0)) > 0.0005) {
+        mexWarnMsgTxt("Warning: If not using addition, the random number factor should be 1/sqrt(2) ~ 0.707.");
     }
 
     mexPrintf("power2        = %d\n", power2);
     mexPrintf("H             = %1.3f\n", H);
     mexPrintf("randomCorners = %d\n", randomCorners);
-    for (uint i = 0; i < corners.size(); i++) {mexPrintf("corners(%d)    = %1.2f\n", i, corners[i]);}
+    for (uint i = 0; i < corners.size(); i++) {
+        mexPrintf("corners[%d]    = %1.3f\n", i, corners[i]);
+    }
     mexPrintf("sigma         = %1.3f\n", sigma);
     mexPrintf("randomFactor  = %1.3f\n", randomFactor);
     mexPrintf("addition      = %d\n", int(addition));
