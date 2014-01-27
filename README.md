@@ -5,7 +5,7 @@ Random terrain generator using the diamond square-algorithm, or the random midpo
 
 Source files best viewed using Qt Creator.
 
-Usage
+Usage -- NOT CURRENT
 -----
 Compile for use with the Matlab/Octave-script `matlab-compile/compile.m`. Then run in Matlab/Octave using
 
