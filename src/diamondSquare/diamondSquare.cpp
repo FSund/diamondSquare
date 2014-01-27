@@ -1,36 +1,51 @@
 #include <src/diamondSquare/diamondSquare.h>
 
-vector<vector<double > >&DiamondSquare::generate(const uint power2,
-        const double H,
-        const vector<double> corners,
-        const long seed,
-        const double sigma,
-        const bool addition,
-        const bool PBC,
-        const uint RNG) {
-    this->power2 = power2;
-    this->addition = addition;
-    this->PBC = PBC;
-    this->RNG = RNG;
-    systemSize = pow(2.0, power2) + 1;
-    rnd = new Random(-(abs(seed)));
+DiamondSquare::DiamondSquare(const uint power2, const uint RNG, const long seed):
+    power2(power2),
+    systemSize(pow(2.0, power2) + 1),
+    R(vector<vector<double> >(systemSize, vector<double>(systemSize))),
+    rnd(new Random(-abs(seed))),
+    RNG(RNG) {
+}
 
-    R.resize(systemSize);
-    for(uint i=0; i<systemSize; i++) R[i].resize(systemSize,0);
+void DiamondSquare::setSeed(const long seed) {
+    rnd = new Random(-abs(seed));
+}
 
-    if (PBC) { // We need the same value in the corners if we are using periodic boundaries
-        R[0][0]                       = corners[0];
-        R[0][systemSize-1]            = R[0][0];
-        R[systemSize-1][0]            = R[0][0];
-        R[systemSize-1][systemSize-1] = R[0][0];
-    } else {
-        R[0][0]                       = corners[0];
-        R[0][systemSize-1]            = corners[1];
-        R[systemSize-1][0]            = corners[2];
-        R[systemSize-1][systemSize-1] = corners[3];
+void DiamondSquare::setRNG(const uint newRNG) {
+    RNG = newRNG;
+}
+
+vector<vector<double > >&DiamondSquare::generate(
+        double H,
+        vector<double> corners,
+        double sigma,
+        double randomFactor,
+        bool addition,
+        bool PBC) {
+
+    if (corners.size() == 0) { // Use random corners if no values are supplied
+        corners.resize(4);
+        if (PBC) {
+            corners[0] = sigma*random();
+            corners[1] = corners[0];
+            corners[2] = corners[0];
+            corners[3] = corners[0];
+        } else {
+            corners[0] = sigma*random();
+            corners[1] = sigma*random();
+            corners[2] = sigma*random();
+            corners[3] = sigma*random();
+        }
+        sigma *= pow(randomFactor, H);
     }
 
-    runDiamondSquare(R, H, sigma);
+    R[0][0]                       = corners[0];
+    R[0][systemSize-1]            = corners[1];
+    R[systemSize-1][0]            = corners[2];
+    R[systemSize-1][systemSize-1] = corners[3];
+
+    runDiamondSquare(R, H, sigma, randomFactor, addition, PBC);
 
     return R;
 }
@@ -57,11 +72,18 @@ std::ostream& operator << (std::ostream& stream, const std::vector<vector<T> >& 
 }
 // DEBUG //
 
-void DiamondSquare::runDiamondSquare(vector<vector<double> >& R, const double H, double initialSigma) {
+void DiamondSquare::runDiamondSquare(
+        vector<vector<double> >& R,
+        const double H,
+        double initialSigma,
+        const double randomFactor,
+        const bool addition,
+        const bool _PBC) {
 
     double sigma = initialSigma;
     uint stepLength = systemSize-1;
     uint halfStepLength = stepLength/2;
+    this->PBC = _PBC;
 
     for (uint depth = 1; depth <= power2; depth++) {
 
@@ -97,7 +119,8 @@ void DiamondSquare::runDiamondSquare(vector<vector<double> >& R, const double H,
                 }
             }
         }
-        sigma *= pow(0.5, 0.5*H);
+//        sigma *= pow(0.5, 0.5*H);
+        sigma *= pow(randomFactor, H);
 
         // Diamonds //
         // Every other row of diamond points, starting with the one at (0, halfStepLength)
@@ -162,7 +185,8 @@ void DiamondSquare::runDiamondSquare(vector<vector<double> >& R, const double H,
                 }
             }
         }
-        sigma *= pow(0.5, 0.5*H);
+//        sigma *= pow(0.5, 0.5*H);
+        sigma *= pow(randomFactor, H);
 
         stepLength /= 2;
         halfStepLength /= 2;

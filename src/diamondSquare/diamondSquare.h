@@ -61,6 +61,10 @@ using namespace std;
 
 class DiamondSquare {
 public:
+    DiamondSquare(const uint power2, const uint RNG = 2, const long seed = 1);
+    void setSeed(const long seed);
+    void setRNG(const uint newRNG);
+
     /*!
         \brief generate The method used to generate a heightmap. Returns a reference to the member armadillo matrix.
 
@@ -105,20 +109,19 @@ public:
         \param RNG an unsigned in the selects which random number generator to use (0 just returns 0.0, 1 uses a uniform
                distribution, 2 uses a normal distribution).
     */
-    vector<vector<double> >& generate(const uint power2,
-            const double H,
-            const vector<double> corners,
-            const long seed,
-            const double sigma,
-            const bool addition,
-            const bool PBC,
-            const uint RNG);
+    vector<vector<double> >& generate(
+            double H,
+            vector<double> corners = vector<double>(),
+            double sigma = 1.0,
+            double randomFactor = 0.5,
+            bool addition = true,
+            bool PBC = false);
 
 private:
     /*!
         The function that does the diamond- and square-steps.
     */
-    void runDiamondSquare(vector<vector<double> > &R, const double H, double initialSigma);
+    void runDiamondSquare(vector<vector<double> > &R, const double H, double initialSigma, const double randomFactor, const bool addition, const bool _PBC);
     double meanOfSquare(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
     double meanOfDiamond(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
 
@@ -144,18 +147,16 @@ private:
     double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> > &R);
 
     /*!
-        \brief random the function that generates the random number for the random displacement.
-        For now we're just using the built-in methods of Armadillo.
+        \brief random Generates random numbers using a separate class.
         \return returns a random number, whose distribution depends on the boolean member variable \a PBC.
      */
     double random();
 
-    vector<vector<double> > R;
     uint power2, systemSize;
-    int RNG;
-    bool PBC;
-    bool addition;
+    vector<vector<double> > R;
     Random *rnd;
+    int RNG;
+    uint PBC;
 };
 
 #endif // DIAMONDSQUARE_H

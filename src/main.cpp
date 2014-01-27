@@ -11,15 +11,17 @@ using namespace std;
 int main(int nArgs, const char *argv[]) {
     int power2;
     double H;
-    vector<double> corners(4,0);
+    bool randomCorners;
+    vector<double> corners; // If DiamondSquare::generate() receives an empty corners vector, it will generate random corners
     double sigma;
+    double randomFactor;
     bool addition;
     bool PBC;
     int RNG;
     int seed;
 
     if (nArgs < 3) {
-        cout << "Usage: ./diamondSquare  power2  H  optional:( corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  initial_RNG_stddv  addition  PBC[0|1]  RNG[0|1|2])  seed[unsigned int] )" << endl;
+        cout << "Usage: ./diamondSquare  power2  H  optional:(randomCorners[0|1]  corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  initial_RNG_stddv  randomFactor  addition[0|1]  PBC[0|1]  RNG[0|1|2]  seed[unsigned int])" << endl;
         exit(1);
     }
 
@@ -28,20 +30,31 @@ int main(int nArgs, const char *argv[]) {
     H      = atof(argv[2]);
 
     // argument that have default values
-    corners[0] = nArgs > 3  ? atof(argv[3])  : 0.0;
-    corners[1] = nArgs > 4  ? atof(argv[4])  : corners[0];
-    corners[2] = nArgs > 5  ? atof(argv[5])  : corners[0];
-    corners[3] = nArgs > 6  ? atof(argv[6])  : corners[0];
-    sigma      = nArgs > 7  ? atof(argv[7])  : 1.0;
-    addition   = nArgs > 8  ? atoi(argv[8])  : true;
-    PBC        = nArgs > 9  ? atoi(argv[9])  : true;
-    RNG        = nArgs > 10 ? atoi(argv[10]) : 2;
-    seed       = nArgs > 11 ? atoi(argv[11]) : 1;
+    randomCorners = nArgs > 3  ? atoi(argv[3])  : true;
+    if (!randomCorners) {
+        corners.resize(4);
+        corners[0] = nArgs > 4  ? atof(argv[4])  : 0.0;
+        corners[1] = nArgs > 5  ? atof(argv[5])  : corners[0];
+        corners[2] = nArgs > 6  ? atof(argv[6])  : corners[0];
+        corners[3] = nArgs > 7  ? atof(argv[7])  : corners[0];
+    }
+
+    sigma        = nArgs >  8 ? atof(argv[8])  : 1.0;
+    randomFactor = nArgs >  9 ? atof(argv[9])  : 1.0/sqrt(2.0);
+    addition     = nArgs > 10 ? atoi(argv[10]) : true;
+    PBC          = nArgs > 11 ? atoi(argv[11]) : true;
+    RNG          = nArgs > 12 ? atoi(argv[12]) : 2;
+    seed         = nArgs > 13 ? atoi(argv[13]) : 1;
+
+    if (!addition && randomFactor != 0.5) {
+        cout << "Warning: If not using addition, the random number factor should be 0.5." << endl;
+        randomFactor = 0.5;
+    }
 
     cout << "--- Diamond-square settings --------------------" << endl;
     cout << "power2 = " << power2  << endl;
     cout << "H (Hurst exponent) = " << H << endl;
-    cout << "corners = "; for (uint i = 0; i < 4; i++) cout << corners[i] << " "; cout << endl;
+    cout << "corners = "; for (uint i = 0; i < corners.size(); i++) cout << corners[i] << " "; cout << endl;
     cout << "sigma = " << sigma << endl;
     cout << "addition = " << std::boolalpha << addition << std::noboolalpha << endl;
     cout << "PBC = " << std::boolalpha << PBC << std::noboolalpha << endl;
@@ -50,8 +63,8 @@ int main(int nArgs, const char *argv[]) {
     cout << "total number of points in grid = " << pow(pow(2, power2)+1, 2) << endl;
     cout << "------------------------------------------------" << endl;
 
-    DiamondSquare generator;
-    vector<vector<double> > heightMap = generator.generate(power2, H, corners, seed, sigma, addition, PBC, RNG);
+    DiamondSquare generator(power2, RNG, seed);
+    vector<vector<double> > heightMap = generator.generate(H, corners, sigma, randomFactor, addition, PBC);
 
 //    cout << endl << heightMap << endl;
 
