@@ -3,7 +3,7 @@
 DiamondSquare::DiamondSquare(const uint power2, const uint RNG, const long seed):
     power2(power2),
     systemSize(pow(2.0, power2) + 1),
-    R(vector<vector<double> >(systemSize, vector<double>(systemSize))),
+    R(std::vector<std::vector<double> >(systemSize, std::vector<double>(systemSize))),
     rnd(new Random(-abs(seed))),
     RNG(RNG) {
 }
@@ -16,9 +16,9 @@ void DiamondSquare::setRNG(const uint newRNG) {
     RNG = newRNG;
 }
 
-vector<vector<double > >&DiamondSquare::generate(
+std::vector<std::vector<double > >&DiamondSquare::generate(
         double H,
-        vector<double> corners,
+        std::vector<double> corners,
         double sigma,
         double randomFactor,
         bool addition,
@@ -53,19 +53,19 @@ vector<vector<double > >&DiamondSquare::generate(
 // DEBUG //
 #include <iomanip>
 template <typename T>
-std::ostream& operator << (std::ostream& stream, const std::vector<vector<T> >& v) {
+std::ostream& operator << (std::ostream& stream, const std::vector<std::vector<T> >& v) {
 
     // Usage: 
-    //     v = vector<vector<T> >( /*do something smart here*/ );
+    //     v = std::vector<std::vector<T> >( /*do something smart here*/ );
     //     cout << v;
 
-    ios_base::fmtflags f(stream.flags()); // Store current flags, so we can reset them later
-    stream << scientific << setprecision(3); // << fixed // Set formatting flags
-    for (typename std::vector<vector<T> >::const_iterator i = v.begin(); i != v.end(); ++i) {
+    std::ios_base::fmtflags f(stream.flags()); // Store current flags, so we can reset them later
+    stream << std::scientific << std::setprecision(3); // << fixed // Set formatting flags
+    for (typename std::vector<std::vector<T> >::const_iterator i = v.begin(); i != v.end(); ++i) {
         for (typename std::vector<T>::const_iterator j = i->begin(); j != i->end(); ++j) {
-            stream << setw(10) << *j << " ";
+            stream << std::setw(10) << *j << " ";
         }
-        stream << endl;
+        stream << std::endl;
     }
     stream.flags(f); // Reset flags to previous state
     return stream;
@@ -73,7 +73,7 @@ std::ostream& operator << (std::ostream& stream, const std::vector<vector<T> >& 
 // DEBUG //
 
 void DiamondSquare::runDiamondSquare(
-        vector<vector<double> >& R,
+        std::vector<std::vector<double> >& R,
         const double H,
         double initialSigma,
         const double randomFactor,
@@ -197,7 +197,7 @@ double DiamondSquare::meanOfSquare(
         const uint x,
         const uint y,
         const uint halfStepLength,
-        const vector<vector<double> >&R) {
+        const std::vector<std::vector<double> >&R) {
 
     return 0.25*(
         R[x+halfStepLength][y+halfStepLength] +
@@ -210,7 +210,7 @@ double DiamondSquare::meanOfDiamond(
         const uint x,
         const uint y,
         const uint halfStepLength,
-        const vector<vector<double> > &R) {
+        const std::vector<std::vector<double> > &R) {
 
     double average;
 
@@ -251,7 +251,7 @@ double DiamondSquare::meanOfDiamond(
     return average;
 }
 
-double DiamondSquare::nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> >& R) {
+double DiamondSquare::nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, std::vector<std::vector<double> >& R) {
 
     return (1.0/3.0)*(
         R[x-halfStepLength][y] +
@@ -259,7 +259,7 @@ double DiamondSquare::nonPBCbottomEdgeDiamonds(const uint x, const uint y, const
         R[x][y-halfStepLength]);
 }
 
-double DiamondSquare::nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> >& R) {
+double DiamondSquare::nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, std::vector<std::vector<double> >& R) {
 
     return (1.0/3.0)*(
         R[x][y-halfStepLength] +

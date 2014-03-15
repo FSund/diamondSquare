@@ -57,8 +57,6 @@
 
 typedef unsigned int uint;
 
-using namespace std;
-
 class DiamondSquare {
 public:
     DiamondSquare(const uint power2, const uint RNG = 2, const long seed = 1);
@@ -99,7 +97,7 @@ public:
 
         \param power2 an integer argument that sets the size of the grid.
         \param H the Hurst-exponent
-        \param corners an armadillo vector with the initial values of the corners.
+        \param corners an armadillo std::vector with the initial values of the corners.
         \param seed the seed used for the random number generator.
         \param sigma the initial standard deviation of the random displacement.
         \param addition a bool controls random displacement of the points used in the interpolation of a new point.
@@ -109,9 +107,9 @@ public:
         \param RNG an unsigned in the selects which random number generator to use (0 just returns 0.0, 1 uses a uniform
                distribution, 2 uses a normal distribution).
     */
-    vector<vector<double> >& generate(
+    std::vector<std::vector<double> >& generate(
             double H = 0.75,
-            vector<double> corners = vector<double>(),
+            std::vector<double> corners = std::vector<double>(),
             double sigma = 1.0,
             double randomFactor = 0.5,
             bool addition = true,
@@ -121,9 +119,9 @@ private:
     /*!
         The function that does the diamond- and square-steps.
     */
-    void runDiamondSquare(vector<vector<double> > &R, const double H, double initialSigma, const double randomFactor, const bool addition, const bool _PBC);
-    double meanOfSquare(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
-    double meanOfDiamond(const uint x, const uint y, const uint halfStepLength, const vector<vector<double> > &R);
+    void runDiamondSquare(std::vector<std::vector<double> > &R, const double H, double initialSigma, const double randomFactor, const bool addition, const bool _PBC);
+    double meanOfSquare(const uint x, const uint y, const uint halfStepLength, const std::vector<std::vector<double> > &R);
+    double meanOfDiamond(const uint x, const uint y, const uint halfStepLength, const std::vector<std::vector<double> > &R);
 
     /*!
         Since we can toggle the periodic boundaries we have made separate methods to do the diamond-step without
@@ -139,12 +137,12 @@ private:
         \param R the armadillo matrix that has the current heightmap.
         \return returns the value of the new point.
      */
-    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> > &R);
+    double nonPBCbottomEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, std::vector<std::vector<double> > &R);
     /*!
         \brief rightEdgeDiamonds See \a nonPBCbottomEdgeDiamonds.
         \sa nonPBCbottomEdgeDiamonds()
     */
-    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, vector<vector<double> > &R);
+    double nonPBCrightEdgeDiamonds(const uint x, const uint y, const uint halfStepLength, std::vector<std::vector<double> > &R);
 
     /*!
         \brief random Generates random numbers using a separate class.
@@ -153,7 +151,7 @@ private:
     double random();
 
     uint power2, systemSize;
-    vector<vector<double> > R;
+    std::vector<std::vector<double> > R;
     Random *rnd;
     int RNG;
     uint PBC;

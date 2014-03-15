@@ -22,7 +22,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     int seed;
 
     if (nArgs < 2) {
-        mexErrMsgTxt("Arguments: power2  H  optional:(randomCorners[0|1]  corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  sigma  randomfactor  addition[0|1]  PBC[0|1]  RNG[0|1|2])  seed[unsigned int])");
+        mexErrMsgTxt("Arguments: power2  H  optional:(randomCorners[0|[1]]  (corner(0,0) corner(1,0) corner(0,1) corner(1,1))  sigma  randomfactor  addition[0|1]  PBC[0|1]  RNG[0|1|2])  seed[unsigned int])");
         exit(1);
     }
 
@@ -52,18 +52,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
         mexWarnMsgTxt("Warning: If not using addition, the random number factor should be 1/sqrt(2) ~ 0.707.");
     }
 
-    mexPrintf("power2        = %d\n", power2);
-    mexPrintf("H             = %1.3f\n", H);
-    mexPrintf("randomCorners = %d\n", randomCorners);
-    for (uint i = 0; i < corners.size(); i++) {
-        mexPrintf("corners[%d]    = %1.3f\n", i, corners[i]);
-    }
-    mexPrintf("sigma         = %1.3f\n", sigma);
-    mexPrintf("randomFactor  = %1.3f\n", randomFactor);
-    mexPrintf("addition      = %d\n", int(addition));
-    mexPrintf("PBC           = %d\n", int(PBC));
-    mexPrintf("RNG           = %d\n", RNG);
-    mexPrintf("seed          = %d\n", seed);
+    // mexPrintf("power2        = %d\n", power2);
+    // mexPrintf("H             = %1.3f\n", H);
+    // mexPrintf("randomCorners = %d\n", randomCorners);
+    // for (uint i = 0; i < corners.size(); i++) {
+    //     mexPrintf("corners[%d]    = %1.3f\n", i, corners[i]);
+    // }
+    // mexPrintf("sigma         = %1.3f\n", sigma);
+    // mexPrintf("randomFactor  = %1.3f\n", randomFactor);
+    // mexPrintf("addition      = %s\n", addition ? "true" : "false");
+    // mexPrintf("PBC           = %s\n", PBC ? "true" : "false");
+    // mexPrintf("RNG           = %d\n", RNG);
+    // mexPrintf("seed          = %d\n", seed);
 
     DiamondSquare generator(power2, RNG, seed);
     vector<vector<double> > heightMap = generator.generate(H, corners, sigma, randomFactor, addition, PBC);

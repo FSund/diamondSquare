@@ -5,7 +5,8 @@ CONFIG -= qt
 
 HEADERS += \
     src/diamondSquare/diamondSquare.h \
-    src/random/random.h
+    src/random/random.h \
+    src/printImage.h
 
 SOURCES += \
     src/main.cpp \
