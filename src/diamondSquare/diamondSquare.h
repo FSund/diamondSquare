@@ -110,7 +110,7 @@ public:
                distribution, 2 uses a normal distribution).
     */
     vector<vector<double> >& generate(
-            double H,
+            double H = 0.75,
             vector<double> corners = vector<double>(),
             double sigma = 1.0,
             double randomFactor = 0.5,
