@@ -51,7 +51,7 @@
 
 #include <iostream>
 #include <vector>
-#include <cmath>        // pow,
+#include <cmath>        // pow, sqrt,
 
 #include <src/random/random.h>
 
@@ -64,7 +64,7 @@ public:
     void setRNG(const uint newRNG);
 
     /*!
-        \brief generate The method used to generate a heightmap. Returns a reference to the member armadillo matrix.
+        \brief generate The method used to generate a heightmap. Returns a reference to a member vector<vector<double>> "matrix".
 
         This method generates the heightmap as described in the main description of this class.
 
@@ -89,6 +89,13 @@ public:
         (when using PBC all four corners of the grid would be point 1, and points 3 and D would also appear on the right
         edge)
 
+        Each iteration the standard deviation of the random numbers is multiplied by a factor
+        pow(randomRangeReductionFactor, H).
+
+        The lacunarity of the surface can be adjusted with the parameter \a randomRangeReductionFactor. If addition is
+        disabled this should be set to 1/sqrt(2). See "Fundamental Algorithms for Computer Graphics" in the chapter
+        "Random fractal forgeries" by Voss R. F. for more details.
+
         If addition is enabled we add a random displacement to all the points used in the interpolation for the new
         points in both the diamond- and the square-step. This is called the successive random addition algorithm. If
         addition is disabled we use the successive random displacement algorithm.
@@ -100,6 +107,7 @@ public:
         \param corners an armadillo std::vector with the initial values of the corners.
         \param seed the seed used for the random number generator.
         \param sigma the initial standard deviation of the random displacement.
+        \param randomRangeReductionFactor the range of the random numbers gets reduced by this factor each iteration.
         \param addition a bool controls random displacement of the points used in the interpolation of a new point.
                If true we use the successive random additions algorithm, if false we use the successive random
                displacement algorithm.
@@ -111,7 +119,7 @@ public:
             double H = 0.75,
             std::vector<double> corners = std::vector<double>(),
             double sigma = 1.0,
-            double randomFactor = 0.5,
+            double randomRangeReductionFactor = 1.0/sqrt(2.0),
             bool addition = true,
             bool PBC = false);
 
@@ -119,7 +127,7 @@ private:
     /*!
         The function that does the diamond- and square-steps.
     */
-    void runDiamondSquare(std::vector<std::vector<double> > &R, const double H, double initialSigma, const double randomFactor, const bool addition, const bool _PBC);
+    void runDiamondSquare(std::vector<std::vector<double> > &R, const double H, double initialSigma, const double randomRangeReductionFactor, const bool addition, const bool _PBC);
     double meanOfSquare(const uint x, const uint y, const uint halfStepLength, const std::vector<std::vector<double> > &R);
     double meanOfDiamond(const uint x, const uint y, const uint halfStepLength, const std::vector<std::vector<double> > &R);
 
@@ -146,7 +154,7 @@ private:
 
     /*!
         \brief random Generates random numbers using a separate class.
-        \return returns a random number, whose distribution depends on the boolean member variable \a PBC.
+        \return returns a random number, whose distribution depends on the boolean member variable \a RNG.
      */
     double random();
 

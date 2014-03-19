@@ -20,7 +20,7 @@ std::vector<std::vector<double > >&DiamondSquare::generate(
         double H,
         std::vector<double> corners,
         double sigma,
-        double randomFactor,
+        double randomRangeReductionFactor,
         bool addition,
         bool PBC) {
 
@@ -37,7 +37,7 @@ std::vector<std::vector<double > >&DiamondSquare::generate(
             corners[2] = sigma*random();
             corners[3] = sigma*random();
         }
-        sigma *= pow(randomFactor, H);
+        sigma *= pow(randomRangeReductionFactor, H);
     }
 
     R[0][0]                       = corners[0];
@@ -45,7 +45,7 @@ std::vector<std::vector<double > >&DiamondSquare::generate(
     R[systemSize-1][0]            = corners[2];
     R[systemSize-1][systemSize-1] = corners[3];
 
-    runDiamondSquare(R, H, sigma, randomFactor, addition, PBC);
+    runDiamondSquare(R, H, sigma, randomRangeReductionFactor, addition, PBC);
 
     return R;
 }
@@ -76,7 +76,7 @@ void DiamondSquare::runDiamondSquare(
         std::vector<std::vector<double> >& R,
         const double H,
         double initialSigma,
-        const double randomFactor,
+        const double randomRangeReductionFactor,
         const bool addition,
         const bool _PBC) {
 
@@ -119,8 +119,7 @@ void DiamondSquare::runDiamondSquare(
                 }
             }
         }
-//        sigma *= pow(0.5, 0.5*H);
-        sigma *= pow(randomFactor, H);
+        sigma *= pow(randomRangeReductionFactor, H);
 
         // Diamonds //
         // Every other row of diamond points, starting with the one at (0, halfStepLength)
@@ -185,8 +184,7 @@ void DiamondSquare::runDiamondSquare(
                 }
             }
         }
-//        sigma *= pow(0.5, 0.5*H);
-        sigma *= pow(randomFactor, H);
+        sigma *= pow(randomRangeReductionFactor, H);
 
         stepLength /= 2;
         halfStepLength /= 2;

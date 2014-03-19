@@ -17,14 +17,14 @@ int main(int nArgs, const char *argv[]) {
     bool randomCorners;
     vector<double> corners; // If DiamondSquare::generate() receives an empty corners vector, it will generate random corners
     double sigma;
-    double randomFactor;
+    double randomRangeReductionFactor;
     bool addition;
     bool PBC;
     int RNG;
     int seed;
 
     if (nArgs < 3) {
-        cout << "Usage: ./diamondSquare  power2  H  optional:(randomCorners[0|1]  corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  initial_RNG_stddv  randomFactor  addition[0|1]  PBC[0|1]  RNG[0|1|2]  seed[unsigned int])" << endl;
+        cout << "Usage: ./diamondSquare  power2  H  optional:(randomCorners[0|1]  corner(0,0)  corner(1,0)  corner(0,1)  corner(1,1)  initial_RNG_stddv  randomRangeReductionFactor  addition[0|1]  PBC[0|1]  RNG[0|1|2]  seed[unsigned int])" << endl;
         exit(1);
     }
 
@@ -44,13 +44,13 @@ int main(int nArgs, const char *argv[]) {
         corners[3] = nArgs > i ? atof(argv[i++])  : corners[0];
     }
     sigma        = nArgs > i ? atof(argv[i++]) : 1.0;
-    randomFactor = nArgs > i ? atof(argv[i++]) : 1.0/sqrt(2.0);
+    randomRangeReductionFactor = nArgs > i ? atof(argv[i++]) : 1.0/sqrt(2.0);
     addition     = nArgs > i ? atoi(argv[i++]) : true;
     PBC          = nArgs > i ? atoi(argv[i++]) : true;
     RNG          = nArgs > i ? atoi(argv[i++]) : 2;
     seed         = nArgs > i ? atoi(argv[i++]) : 1;
 
-    if (!addition && abs(randomFactor-1.0/sqrt(2.0)) > 0.0005) {
+    if (!addition && abs(randomRangeReductionFactor-1.0/sqrt(2.0)) > 0.0005) {
         cout << "Warning: If not using addition, the random number factor should be 1/sqrt(2) ~ 0.707." << endl;
     }
 
@@ -69,7 +69,7 @@ int main(int nArgs, const char *argv[]) {
         }
     }
     cout << "sigma              = " << sigma << endl;
-    cout << "randomFactor       = " << randomFactor << endl;
+    cout << "randomRangeReductionFactor       = " << randomRangeReductionFactor << endl;
     cout << "addition           = " << std::boolalpha << addition << std::noboolalpha << endl;
     cout << "PBC                = " << std::boolalpha << PBC << std::noboolalpha << endl;
     cout << "RNG                = " << RNG << " (0 == no RNG, 1 == uniform, 2 == standard normal distribution)" << endl;
@@ -81,7 +81,7 @@ int main(int nArgs, const char *argv[]) {
     cout << "------------------------------------------------" << endl;
 
     DiamondSquare generator(power2, RNG, seed);
-    vector<vector<double> > heightMap = generator.generate(H, corners, sigma, randomFactor, addition, PBC);
+    vector<vector<double> > heightMap = generator.generate(H, corners, sigma, randomRangeReductionFactor, addition, PBC);
 
 //    estimate_hurst_exponent(heightMap);
 
