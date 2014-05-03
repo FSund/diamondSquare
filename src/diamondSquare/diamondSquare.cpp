@@ -4,12 +4,12 @@ DiamondSquare::DiamondSquare(const uint power2, const uint RNG, const long seed)
     power2(power2),
     systemSize(pow(2.0, power2) + 1),
     R(std::vector<std::vector<double> >(systemSize, std::vector<double>(systemSize))),
-    rnd(new Random(-abs(seed))),
+    rnd(new Random(-std::abs(seed))),
     RNG(RNG) {
 }
 
 void DiamondSquare::setSeed(const long seed) {
-    rnd = new Random(-abs(seed));
+    rnd = new Random(-std::abs(seed));
 }
 
 void DiamondSquare::setRNG(const uint newRNG) {
