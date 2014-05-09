@@ -53,7 +53,7 @@
 #include <vector>
 #include <cmath>        // pow, sqrt,
 
-#include <src/random/random.h>
+#include "../random/random.h"
 
 typedef unsigned int uint;
 

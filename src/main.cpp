@@ -4,12 +4,10 @@
 #include <cstdlib>      // atoi, atof, atol
 #include <fstream>
 
-#include <src/diamondSquare/diamondSquare.h>
-#include <src/printImage.h>
+#include "diamondSquare/diamondSquare.h"
+#include "printImage.h"
 
 using namespace std;
-
-double estimate_hurst_exponent(const vector<vector<double> > &f);
 
 int main(int nArgs, const char *argv[]) {
     int power2;
@@ -83,56 +81,7 @@ int main(int nArgs, const char *argv[]) {
     DiamondSquare generator(power2, RNG, seed);
     vector<vector<double> > heightMap = generator.generate(H, corners, sigma, randomRangeReductionFactor, addition, PBC);
 
-//    estimate_hurst_exponent(heightMap);
-
     printMap(heightMap, "test.bmp");
 
     return 0;
 }
-
-double mean(const vector<vector<double> > &f, uint iMin, uint iMax, uint jMin, uint jMax) {
-    double m = 0.0;
-    for (uint i = iMin; i <= iMax; i++) {
-        for (uint j = jMin; j <= jMax; j++) {
-            m += f[i][j];
-        }
-    }
-    m /= (iMax-iMin+1)*(jMax-jMin+1);
-    return m;
-}
-
-double estimate_hurst_exponent(const vector<vector<double> > &f) {
-    uint nMin = 2;
-    uint nMax = 10;
-    vector<uint> nVec;
-    for (uint i = nMin; i <= nMax; i++) nVec.push_back(i);
-
-    double theta = 0.0;
-    uint N = f.size();
-    vector<double> sigma_DMA_squared(nVec.size(), 0.0);
-    for (uint k = 0; k < nVec.size(); k++) {
-        uint n = nVec[k];
-        uint mLower = ceil((n-1.0)*(1.0-theta));
-        uint mUpper = -floor((n-1.0)*theta);
-        for (uint i = mLower; i < N+mUpper; i++) {
-            uint iMax = i - mUpper;
-            uint iMin = i - mLower;
-            for (uint j = mLower; j < N+mUpper; j++) {
-                uint jMax = j - mUpper;
-                uint jMin = j - mLower;
-                sigma_DMA_squared[k] += pow(f[i][j] + mean(f, iMin, iMax, jMin, jMax), 2.0);
-            }
-        }
-        sigma_DMA_squared[k] /= pow(N-nMax, 2.0);
-    }
-
-//    cout << "sigma_DMA^2" << endl;
-//    for (uint i = 0; i < sigma_DMA_squared.size(); i++) {
-//        cout << sigma_DMA_squared[i] << endl;
-//    }
-
-    return 1.0;
-}
-
-// to get QtCreator to run/debug programs correctly:
-// $ echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope

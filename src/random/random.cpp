@@ -1,4 +1,4 @@
-#include <src/random/random.h>
+#include "random.h"
 
 Random::Random(long seed) {
    *idum = seed;

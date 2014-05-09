@@ -1,4 +1,4 @@
-#include <src/diamondSquare/diamondSquare.h>
+#include "diamondSquare.h"
 
 DiamondSquare::DiamondSquare(const uint power2, const uint RNG, const long seed):
     power2(power2),

@@ -1,9 +1,11 @@
 #include <vector>
 #include <cmath>    // sqrt, abs
 #include <mex.h>
-#include <src/diamondSquare/diamondSquare.h>
+#include "../src/diamondSquare/diamondSquare.h"
 
 using namespace std;
+
+typedef unsigned int uint;
 
 #define R_OUT plhs[0]
 
@@ -48,7 +50,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nArgs, const mxArray* argv[]) {
     RNG          = nArgs > i ? int(*mxGetPr(argv[i++])) : 2;
     seed         = nArgs > i ? int(*mxGetPr(argv[i++])) : 1;
 
-    if (!addition && abs(randomFactor-1.0/sqrt(2.0)) > 0.0005) {
+    if (!addition && std::abs(randomFactor-1.0/sqrt(2.0)) > 0.0005) {
         mexWarnMsgTxt("Warning: If not using addition, the random number factor should be 1/sqrt(2) ~ 0.707.");
     }
 

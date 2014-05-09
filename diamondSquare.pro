@@ -14,3 +14,7 @@ SOURCES += \
     src/diamondSquare/diamondSquare.cpp
 
 include(defaults.pri)
+
+OTHER_FILES += \
+    matlabCompile/diamondSquareGenerator.cpp \
+    matlabCompile/compile.m
